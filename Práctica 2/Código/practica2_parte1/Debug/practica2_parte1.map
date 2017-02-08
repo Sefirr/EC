@@ -1,0 +1,187 @@
+
+Allocating common symbols
+Common symbol       size              file
+
+led_state           0x4               ./led.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD ./boton.o
+LOAD ./init.o
+LOAD ./led.o
+LOAD ./main.o
+START GROUP
+LOAD c:/eclipsearm/sourcery-g++-lite-arm-2011.03/bin/../lib/gcc/arm-none-eabi/4.5.2\libgcc.a
+LOAD c:/eclipsearm/sourcery-g++-lite-arm-2011.03/bin/../lib/gcc/arm-none-eabi/4.5.2/../../../../arm-none-eabi/lib\libc.a
+END GROUP
+                0x0c000000                . = 0xc000000
+                0x0c000000                Image_RO_Base = .
+
+.text           0x0c000000      0xc18
+ *(.text)
+ .text          0x0c000000       0xd8 ./boton.o
+                0x0c000000                EliminaRebotes
+                0x0c000060                DoDetecta
+ .text          0x0c0000d8      0x59c ./init.o
+                0x0c0000d8                start
+                0x0c000204                DoSWI
+                0x0c00020c                DoUndef
+                0x0c000214                DoDabort
+                0x0c000220                screen
+ .text          0x0c000674      0x308 ./led.o
+                0x0c000674                init_leds
+                0x0c0006c0                leds_on
+                0x0c0006e0                leds_off
+                0x0c000700                led1_on
+                0x0c000740                led1_off
+                0x0c000780                led2_on
+                0x0c0007c0                led2_off
+                0x0c000800                switchLed1
+                0x0c000840                switchLed2
+                0x0c000880                leds_switch
+                0x0c0008c0                Led_Display
+ .text          0x0c00097c      0x29c ./main.o
+                0x0c00097c                write
+                0x0c0009dc                ISR_Undef
+                0x0c000a18                ISR_FIQ
+                0x0c000a54                ISR_SWI
+                0x0c000a90                ISR_Pabort
+                0x0c000acc                ISR_Dabort
+                0x0c000b08                InitPorts
+                0x0c000b6c                IntInit
+                0x0c000bf4                main
+                0x0c000c18                Image_RO_Limit = .
+                0x0c000c18                Image_RW_Base = .
+
+.glue_7         0x0c000c18        0x0
+ .glue_7        0x00000000        0x0 linker stubs
+
+.glue_7t        0x0c000c18        0x0
+ .glue_7t       0x00000000        0x0 linker stubs
+
+.vfp11_veneer   0x0c000c18        0x0
+ .vfp11_veneer  0x00000000        0x0 linker stubs
+
+.v4_bx          0x0c000c18        0x0
+ .v4_bx         0x00000000        0x0 linker stubs
+
+.data           0x0c000c18        0x4
+ *(.data)
+ .data          0x0c000c18        0x0 ./boton.o
+ .data          0x0c000c18        0x0 ./init.o
+ .data          0x0c000c18        0x0 ./led.o
+ .data          0x0c000c18        0x4 ./main.o
+                0x0c000c18                Screen
+
+.rodata         0x0c000c1c       0x28
+ *(.rodata)
+ .rodata        0x0c000c1c       0x28 ./main.o
+                0x0c000c44                Image_RW_Limit = .
+                0x0c000c44                Image_ZI_Base = .
+
+.bss            0x0c000c44        0x8
+ *(.bss)
+ .bss           0x0c000c44        0x4 ./boton.o
+                0x0c000c44                update
+ .bss           0x0c000c48        0x0 ./init.o
+ .bss           0x0c000c48        0x0 ./led.o
+ .bss           0x0c000c48        0x0 ./main.o
+ COMMON         0x0c000c48        0x4 ./led.o
+                0x0c000c48                led_state
+                0x0c000c4c                Image_ZI_Limit = .
+                0x0c000c4c                __bss_start__ = .
+                0x0c000c4c                __bss_end__ = .
+                0x0c000c4c                __EH_FRAME_BEGIN__ = .
+                0x0c000c4c                __EH_FRAME_END__ = .
+                0x0c000c4c                PROVIDE (__stack, .)
+                0x0c000c4c                end = .
+                0x0c000c4c                _end = .
+
+.comment        0x00000000       0x2a
+ .comment       0x00000000       0x2a ./boton.o
+                                 0x2b (size before relaxing)
+ .comment       0x00000000       0x2b ./led.o
+ .comment       0x00000000       0x2b ./main.o
+
+.ARM.attributes
+                0x00000000       0x30
+ .ARM.attributes
+                0x00000000       0x32 ./boton.o
+ .ARM.attributes
+                0x00000032       0x22 ./init.o
+ .ARM.attributes
+                0x00000054       0x32 ./led.o
+ .ARM.attributes
+                0x00000086       0x32 ./main.o
+
+.debug_info     0x00000000      0x3ad
+ *(.debug_info)
+ .debug_info    0x00000000       0xb0 ./boton.o
+ .debug_info    0x000000b0       0x59 ./init.o
+ .debug_info    0x00000109      0x140 ./led.o
+ .debug_info    0x00000249      0x164 ./main.o
+
+.debug_line     0x00000000      0x24a
+ *(.debug_line)
+ .debug_line    0x00000000       0x87 ./boton.o
+ .debug_line    0x00000087       0x90 ./init.o
+ .debug_line    0x00000117       0x91 ./led.o
+ .debug_line    0x000001a8       0xa2 ./main.o
+
+.debug_abbrev   0x00000000      0x1b9
+ *(.debug_abbrev)
+ .debug_abbrev  0x00000000       0x72 ./boton.o
+ .debug_abbrev  0x00000072       0x14 ./init.o
+ .debug_abbrev  0x00000086       0x7c ./led.o
+ .debug_abbrev  0x00000102       0xb7 ./main.o
+
+.debug_frame    0x00000000      0x32c
+ *(.debug_frame)
+ .debug_frame   0x00000000       0x50 ./boton.o
+ .debug_frame   0x00000050      0x170 ./led.o
+ .debug_frame   0x000001c0      0x16c ./main.o
+OUTPUT(practica2_parte1.elf elf32-littlearm)
+
+.debug_macinfo  0x00000000     0xf0dc
+ .debug_macinfo
+                0x00000000     0x50d6 ./boton.o
+ .debug_macinfo
+                0x000050d6     0x50a3 ./led.o
+ .debug_macinfo
+                0x0000a179     0x4f63 ./main.o
+
+.debug_loc      0x00000000      0x3c8
+ .debug_loc     0x00000000       0x58 ./boton.o
+ .debug_loc     0x00000058      0x1e4 ./led.o
+ .debug_loc     0x0000023c      0x18c ./main.o
+
+.debug_pubnames
+                0x00000000      0x183
+ .debug_pubnames
+                0x00000000       0x3e ./boton.o
+ .debug_pubnames
+                0x0000003e       0xb7 ./led.o
+ .debug_pubnames
+                0x000000f5       0x8e ./main.o
+
+.debug_aranges  0x00000000       0x80
+ .debug_aranges
+                0x00000000       0x20 ./boton.o
+ .debug_aranges
+                0x00000020       0x20 ./init.o
+ .debug_aranges
+                0x00000040       0x20 ./led.o
+ .debug_aranges
+                0x00000060       0x20 ./main.o
+
+.debug_str      0x00000000      0x171
+ .debug_str     0x00000000       0x72 ./boton.o
+ .debug_str     0x00000072       0x88 ./led.o
+                                 0xb8 (size before relaxing)
+ .debug_str     0x000000fa       0x77 ./main.o
+                                 0xa7 (size before relaxing)

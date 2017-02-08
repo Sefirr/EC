@@ -1,0 +1,8 @@
+Tareas a realizar
+
+
+1.- Completar las rutinas de iniciacion del dispositivo boton, y su rutina de tratamiento de interrupcion en boton.c
+2.- Completar las rutinas de iniciacion del dispositivo temporizador, y su rutina de tratamiento de interrupcion en timer.c
+3.- Completar la rutina para mostrar el valor del contador en el display de 8 segmentos en el archivo 8seg.c
+
+

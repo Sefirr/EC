@@ -1,0 +1,374 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"boton.c"
+  21              	.Ltext0:
+  22              		.file 1 "../boton.c"
+ 1911              		.align	2
+ 1914              	update:
+ 1915 0000 00000000 		.space	4
+ 1916              		.global	pausa
+ 1917              		.align	2
+ 1920              	pausa:
+ 1921 0004 00000000 		.space	4
+ 1922              		.global	resetsymbol
+ 1923              		.align	2
+ 1926              	resetsymbol:
+ 1927 0008 00000000 		.space	4
+ 1928              		.text
+ 1929              		.align	2
+ 1930              		.global	Eint4567_init
+ 1932              	Eint4567_init:
+ 1933              	.LFB0:
+   1:../boton.c    **** /*********************************************************************************************
+   2:../boton.c    **** * Fichero:	button.c
+   3:../boton.c    **** * Autor:		
+   4:../boton.c    **** * Descrip:	Funciones de manejo de los pulsadores (EINT6-7)
+   5:../boton.c    **** * Version:	
+   6:../boton.c    **** *********************************************************************************************/
+   7:../boton.c    **** 
+   8:../boton.c    **** /*--- ficheros de cabecera ---*/
+   9:../boton.c    **** #include "44b.h"
+  10:../boton.c    **** #include "def.h"
+  11:../boton.c    **** /*--- variables globales ---*/
+  12:../boton.c    **** unsigned int update = 0;
+  13:../boton.c    **** unsigned int pausa = 0;
+  14:../boton.c    **** unsigned int resetsymbol=0;
+  15:../boton.c    **** 
+  16:../boton.c    **** /*--- declaracion de funciones ---*/
+  17:../boton.c    **** void Eint4567_ISR(void) __attribute__ ((interrupt ("IRQ"))); 
+  18:../boton.c    **** void Eint4567_init(void);
+  19:../boton.c    **** void EliminaRebotes(void);
+  20:../boton.c    **** 
+  21:../boton.c    **** #define INTPND  (*(volatile unsigned *)0x01E00004)
+  22:../boton.c    **** 
+  23:../boton.c    **** /*--- codigo de funciones ---*/
+  24:../boton.c    **** void Eint4567_init(void)
+  25:../boton.c    **** {
+ 1934              		.loc 1 25 0
+ 1935              		.cfi_startproc
+ 1936              		@ Function supports interworking.
+ 1937              		@ args = 0, pretend = 0, frame = 0
+ 1938              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1939 0000 0DC0A0E1 		mov	ip, sp
+ 1940              	.LCFI0:
+ 1941              		.cfi_def_cfa_register 12
+ 1942 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1943 0008 04B04CE2 		sub	fp, ip, #4
+ 1944              		.cfi_offset 14, -8
+ 1945              		.cfi_offset 13, -12
+ 1946              		.cfi_offset 11, -16
+ 1947              	.LCFI1:
+ 1948              		.cfi_def_cfa 11, 4
+  26:../boton.c    **** /*TAREA 1a*/
+  27:../boton.c    ****     
+  28:../boton.c    ****     /* Configuracion del puerto G */
+  29:../boton.c    ****     	rPCONG  = 0xffff;        		// Establece la funcion de los pines (EINT0-7)
+ 1949              		.loc 1 29 0
+ 1950 000c 9C309FE5 		ldr	r3, .L2
+ 1951 0010 9C209FE5 		ldr	r2, .L2+4
+ 1952 0014 002083E5 		str	r2, [r3, #0]
+  30:../boton.c    **** 		rPUPG   = 0x0;                  // Habilita el "pull up" del puerto
+ 1953              		.loc 1 30 0
+ 1954 0018 98309FE5 		ldr	r3, .L2+8
+ 1955 001c 0020A0E3 		mov	r2, #0
+ 1956 0020 002083E5 		str	r2, [r3, #0]
+  31:../boton.c    **** 		rEXTINT = rEXTINT|0x22222222;   // Configura las lineas de int. como de flanco de bajada
+ 1957              		.loc 1 31 0
+ 1958 0024 90209FE5 		ldr	r2, .L2+12
+ 1959 0028 8C309FE5 		ldr	r3, .L2+12
+ 1960 002c 001093E5 		ldr	r1, [r3, #0]
+ 1961 0030 88309FE5 		ldr	r3, .L2+16
+ 1962 0034 033081E1 		orr	r3, r1, r3
+ 1963 0038 003082E5 		str	r3, [r2, #0]
+  32:../boton.c    **** 
+  33:../boton.c    **** 	/* Establece la rutina de servicio para Eint4567 */
+  34:../boton.c    **** 		pISR_EINT4567 = (int)Eint4567_ISR;
+ 1964              		.loc 1 34 0
+ 1965 003c 80309FE5 		ldr	r3, .L2+20
+ 1966 0040 80209FE5 		ldr	r2, .L2+24
+ 1967 0044 002083E5 		str	r2, [r3, #0]
+  35:../boton.c    **** 
+  36:../boton.c    **** 	/* Configurar del controlador de interrupciones */
+  37:../boton.c    **** 		rI_ISPC = 0x3ffffff; // Escribimos 1s en I_ISPC para que se borren todos los bits de interrupcion
+ 1968              		.loc 1 37 0
+ 1969 0048 7C309FE5 		ldr	r3, .L2+28
+ 1970 004c 3F23E0E3 		mvn	r2, #-67108864
+ 1971 0050 002083E5 		str	r2, [r3, #0]
+  38:../boton.c    **** 		rEXTINTPND = 0xf;		   // Borra EXTINTPND escribiendo 1s en el propio registro.
+ 1972              		.loc 1 38 0
+ 1973 0054 74309FE5 		ldr	r3, .L2+32
+ 1974 0058 0F20A0E3 		mov	r2, #15
+ 1975 005c 002083E5 		str	r2, [r3, #0]
+  39:../boton.c    **** 		rINTMOD = 0; // Configura las lineas como de tipo IRQ mediante rINTMOD
+ 1976              		.loc 1 39 0
+ 1977 0060 6C309FE5 		ldr	r3, .L2+36
+ 1978 0064 0020A0E3 		mov	r2, #0
+ 1979 0068 002083E5 		str	r2, [r3, #0]
+  40:../boton.c    **** 		rINTCON |= 0x1; // Habilita int. vectorizadas y la linea IRQ (FIQ no) mediante rINTCON
+ 1980              		.loc 1 40 0
+ 1981 006c 1E36A0E3 		mov	r3, #31457280
+ 1982 0070 1E26A0E3 		mov	r2, #31457280
+ 1983 0074 002092E5 		ldr	r2, [r2, #0]
+ 1984 0078 012082E3 		orr	r2, r2, #1
+ 1985 007c 002083E5 		str	r2, [r3, #0]
+  41:../boton.c    **** 
+  42:../boton.c    **** 	// Enmascara todas las lineas excepto eint4567 y el bit global mediante rINTMSK
+  43:../boton.c    **** 		rINTMSK = ~(BIT_EINT4567|BIT_GLOBAL);
+ 1986              		.loc 1 43 0
+ 1987 0080 50309FE5 		ldr	r3, .L2+40
+ 1988 0084 4226E0E3 		mvn	r2, #69206016
+ 1989 0088 002083E5 		str	r2, [r3, #0]
+  44:../boton.c    **** 
+  45:../boton.c    ****     /* Por precaucion, se vuelven a borrar los bits de INTPND y EXTINTPND */
+  46:../boton.c    **** 		rI_ISPC = 0x3ffffff; // Borra INTPND escribiendo 1s en I_ISPC.
+ 1990              		.loc 1 46 0
+ 1991 008c 38309FE5 		ldr	r3, .L2+28
+ 1992 0090 3F23E0E3 		mvn	r2, #-67108864
+ 1993 0094 002083E5 		str	r2, [r3, #0]
+  47:../boton.c    **** 		rEXTINTPND = 0xf; // Borra EXTINTPND escribiendo 1s en el propio registro.
+ 1994              		.loc 1 47 0
+ 1995 0098 30309FE5 		ldr	r3, .L2+32
+ 1996 009c 0F20A0E3 		mov	r2, #15
+ 1997 00a0 002083E5 		str	r2, [r3, #0]
+  48:../boton.c    **** /*fin TAREA 1a*/  
+  49:../boton.c    **** }
+ 1998              		.loc 1 49 0
+ 1999 00a4 0CD04BE2 		sub	sp, fp, #12
+ 2000 00a8 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2001 00ac 1EFF2FE1 		bx	lr
+ 2002              	.L3:
+ 2003              		.align	2
+ 2004              	.L2:
+ 2005 00b0 4000D201 		.word	30539840
+ 2006 00b4 FFFF0000 		.word	65535
+ 2007 00b8 4800D201 		.word	30539848
+ 2008 00bc 5000D201 		.word	30539856
+ 2009 00c0 22222222 		.word	572662306
+ 2010 00c4 74FF7F0C 		.word	209715060
+ 2011 00c8 00000000 		.word	Eint4567_ISR
+ 2012 00cc 2400E001 		.word	31457316
+ 2013 00d0 5400D201 		.word	30539860
+ 2014 00d4 0800E001 		.word	31457288
+ 2015 00d8 0C00E001 		.word	31457292
+ 2016              		.cfi_endproc
+ 2017              	.LFE0:
+ 2019              		.align	2
+ 2020              		.global	EliminaRebotes
+ 2022              	EliminaRebotes:
+ 2023              	.LFB1:
+  50:../boton.c    **** 
+  51:../boton.c    **** // Rutina para hacer una espera activa
+  52:../boton.c    **** void EliminaRebotes(void) {
+ 2024              		.loc 1 52 0
+ 2025              		.cfi_startproc
+ 2026              		@ Function supports interworking.
+ 2027              		@ args = 0, pretend = 0, frame = 16
+ 2028              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2029 00dc 0DC0A0E1 		mov	ip, sp
+ 2030              	.LCFI2:
+ 2031              		.cfi_def_cfa_register 12
+ 2032 00e0 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2033 00e4 04B04CE2 		sub	fp, ip, #4
+ 2034              		.cfi_offset 14, -8
+ 2035              		.cfi_offset 13, -12
+ 2036              		.cfi_offset 11, -16
+ 2037              	.LCFI3:
+ 2038              		.cfi_def_cfa 11, 4
+ 2039 00e8 10D04DE2 		sub	sp, sp, #16
+  53:../boton.c    **** 	int i,j,k;
+  54:../boton.c    **** 	i=200000;
+ 2040              		.loc 1 54 0
+ 2041 00ec 44309FE5 		ldr	r3, .L7
+ 2042 00f0 18300BE5 		str	r3, [fp, #-24]
+  55:../boton.c    **** 	j=0;
+ 2043              		.loc 1 55 0
+ 2044 00f4 0030A0E3 		mov	r3, #0
+ 2045 00f8 10300BE5 		str	r3, [fp, #-16]
+  56:../boton.c    **** 	while (j!=i){
+ 2046              		.loc 1 56 0
+ 2047 00fc 060000EA 		b	.L5
+ 2048              	.L6:
+  57:../boton.c    **** 		k=k*j;
+ 2049              		.loc 1 57 0
+ 2050 0100 14301BE5 		ldr	r3, [fp, #-20]
+ 2051 0104 10201BE5 		ldr	r2, [fp, #-16]
+ 2052 0108 920303E0 		mul	r3, r2, r3
+ 2053 010c 14300BE5 		str	r3, [fp, #-20]
+  58:../boton.c    **** 		j+=1;
+ 2054              		.loc 1 58 0
+ 2055 0110 10301BE5 		ldr	r3, [fp, #-16]
+ 2056 0114 013083E2 		add	r3, r3, #1
+ 2057 0118 10300BE5 		str	r3, [fp, #-16]
+ 2058              	.L5:
+  56:../boton.c    **** 	while (j!=i){
+ 2059              		.loc 1 56 0 discriminator 1
+ 2060 011c 10201BE5 		ldr	r2, [fp, #-16]
+ 2061 0120 18301BE5 		ldr	r3, [fp, #-24]
+ 2062 0124 030052E1 		cmp	r2, r3
+ 2063 0128 F4FFFF1A 		bne	.L6
+  59:../boton.c    **** 	}
+  60:../boton.c    **** }
+ 2064              		.loc 1 60 0
+ 2065 012c 0CD04BE2 		sub	sp, fp, #12
+ 2066 0130 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2067 0134 1EFF2FE1 		bx	lr
+ 2068              	.L8:
+ 2069              		.align	2
+ 2070              	.L7:
+ 2071 0138 400D0300 		.word	200000
+ 2072              		.cfi_endproc
+ 2073              	.LFE1:
+ 2075              		.align	2
+ 2076              		.global	Eint4567_ISR
+ 2078              	Eint4567_ISR:
+ 2079              	.LFB2:
+  61:../boton.c    **** 
+  62:../boton.c    **** void Eint4567_ISR(void)
+  63:../boton.c    **** {          
+ 2080              		.loc 1 63 0
+ 2081              		.cfi_startproc
+ 2082              		@ Interrupt Service Routine.
+ 2083              		@ args = 0, pretend = 0, frame = 8
+ 2084              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2085 013c 04C02DE5 		str	ip, [sp, #-4]!
+ 2086 0140 0DC0A0E1 		mov	ip, sp
+ 2087              	.LCFI4:
+ 2088              		.cfi_def_cfa_register 12
+ 2089 0144 0FD82DE9 		stmfd	sp!, {r0, r1, r2, r3, fp, ip, lr, pc}
+ 2090 0148 04B04CE2 		sub	fp, ip, #4
+ 2091              		.cfi_offset 14, -8
+ 2092              		.cfi_offset 13, -12
+ 2093              		.cfi_offset 11, -16
+ 2094              		.cfi_offset 3, -20
+ 2095              		.cfi_offset 2, -24
+ 2096              		.cfi_offset 1, -28
+ 2097              		.cfi_offset 0, -32
+ 2098              	.LCFI5:
+ 2099              		.cfi_def_cfa 11, 4
+ 2100 014c 08D04DE2 		sub	sp, sp, #8
+  64:../boton.c    ****     int which_int;
+  65:../boton.c    **** 	/*TAREA 1b*/
+  66:../boton.c    ****     /* Identificar la interrupción */
+  67:../boton.c    ****     	which_int = rEXTINTPND;
+ 2101              		.loc 1 67 0
+ 2102 0150 90309FE5 		ldr	r3, .L14
+ 2103 0154 003093E5 		ldr	r3, [r3, #0]
+ 2104 0158 20300BE5 		str	r3, [fp, #-32]
+  68:../boton.c    **** 
+  69:../boton.c    ****     /* Código para eliminar rebotes*/
+  70:../boton.c    ****     	EliminaRebotes();
+ 2105              		.loc 1 70 0
+ 2106 015c FEFFFFEB 		bl	EliminaRebotes
+  71:../boton.c    **** 	/* Reflejar en update el sentido de la actualización
+  72:../boton.c    **** 	   Nota: para solucionar los problemas de rebotes en el pulsador 
+  73:../boton.c    ****              solo se modifica update cuando se encuentra a cero */ 
+  74:../boton.c    **** 
+  75:../boton.c    ****        switch (which_int) {
+ 2107              		.loc 1 75 0
+ 2108 0160 20301BE5 		ldr	r3, [fp, #-32]
+ 2109 0164 040053E3 		cmp	r3, #4
+ 2110 0168 0200000A 		beq	.L11
+ 2111 016c 080053E3 		cmp	r3, #8
+ 2112 0170 0700000A 		beq	.L12
+  76:../boton.c    ****       	case 4: // Botón izquierdo
+  77:../boton.c    ****       		resetsymbol=1;
+  78:../boton.c    ****       	 	update = 5; // actualizar al simbolo anterior
+  79:../boton.c    ****       	 	break;
+  80:../boton.c    ****       	case 8: // Botón derecho
+  81:../boton.c    ****       	    pausa= ! pausa;
+  82:../boton.c    ****       	    update = 1; // actualizar al simbolo siguiente
+  83:../boton.c    ****       	    break;
+  84:../boton.c    ****       	default:
+  85:../boton.c    ****          	break;
+ 2113              		.loc 1 85 0
+ 2114 0174 110000EA 		b	.L13
+ 2115              	.L11:
+  77:../boton.c    ****       		resetsymbol=1;
+ 2116              		.loc 1 77 0
+ 2117 0178 6C309FE5 		ldr	r3, .L14+4
+ 2118 017c 0120A0E3 		mov	r2, #1
+ 2119 0180 002083E5 		str	r2, [r3, #0]
+  78:../boton.c    ****       	 	update = 5; // actualizar al simbolo anterior
+ 2120              		.loc 1 78 0
+ 2121 0184 64309FE5 		ldr	r3, .L14+8
+ 2122 0188 0520A0E3 		mov	r2, #5
+ 2123 018c 002083E5 		str	r2, [r3, #0]
+  79:../boton.c    ****       	 	break;
+ 2124              		.loc 1 79 0
+ 2125 0190 0A0000EA 		b	.L13
+ 2126              	.L12:
+  81:../boton.c    ****       	    pausa= ! pausa;
+ 2127              		.loc 1 81 0
+ 2128 0194 58309FE5 		ldr	r3, .L14+12
+ 2129 0198 003093E5 		ldr	r3, [r3, #0]
+ 2130 019c 000053E3 		cmp	r3, #0
+ 2131 01a0 0020A013 		movne	r2, #0
+ 2132 01a4 0120A003 		moveq	r2, #1
+ 2133 01a8 44309FE5 		ldr	r3, .L14+12
+ 2134 01ac 002083E5 		str	r2, [r3, #0]
+  82:../boton.c    ****       	    update = 1; // actualizar al simbolo siguiente
+ 2135              		.loc 1 82 0
+ 2136 01b0 38309FE5 		ldr	r3, .L14+8
+ 2137 01b4 0120A0E3 		mov	r2, #1
+ 2138 01b8 002083E5 		str	r2, [r3, #0]
+  83:../boton.c    ****       	    break;
+ 2139              		.loc 1 83 0
+ 2140 01bc 0000A0E1 		mov	r0, r0	@ nop
+ 2141              	.L13:
+  86:../boton.c    ****        } 
+  87:../boton.c    ****     
+  88:../boton.c    ****     /* Finalizar ISR */    
+  89:../boton.c    ****        rEXTINTPND = 0xf;				// borra los bits en EXTINTPND
+ 2142              		.loc 1 89 0
+ 2143 01c0 20309FE5 		ldr	r3, .L14
+ 2144 01c4 0F20A0E3 		mov	r2, #15
+ 2145 01c8 002083E5 		str	r2, [r3, #0]
+  90:../boton.c    ****        rI_ISPC    = BIT_EINT4567;		// borra el bit pendiente en INTPND
+ 2146              		.loc 1 90 0
+ 2147 01cc 24309FE5 		ldr	r3, .L14+16
+ 2148 01d0 0226A0E3 		mov	r2, #2097152
+ 2149 01d4 002083E5 		str	r2, [r3, #0]
+  91:../boton.c    **** 	/*fin TAREA 1b*/	
+  92:../boton.c    **** }
+ 2150              		.loc 1 92 0
+ 2151 01d8 1CD04BE2 		sub	sp, fp, #28
+ 2152 01dc 0F689DE8 		ldmfd	sp, {r0, r1, r2, r3, fp, sp, lr}
+ 2153 01e0 04C09DE4 		ldmfd	sp!, {ip}
+ 2154 01e4 04F05EE2 		subs	pc, lr, #4
+ 2155              	.L15:
+ 2156              		.align	2
+ 2157              	.L14:
+ 2158 01e8 5400D201 		.word	30539860
+ 2159 01ec 00000000 		.word	resetsymbol
+ 2160 01f0 00000000 		.word	update
+ 2161 01f4 00000000 		.word	pausa
+ 2162 01f8 2400E001 		.word	31457316
+ 2163              		.cfi_endproc
+ 2164              	.LFE2:
+ 2166              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 boton.c
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1914   .bss:00000000 update
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1911   .bss:00000000 $d
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1920   .bss:00000004 pausa
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1926   .bss:00000008 resetsymbol
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1929   .text:00000000 $a
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:1932   .text:00000000 Eint4567_init
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2005   .text:000000b0 $d
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2078   .text:0000013c Eint4567_ISR
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2019   .text:000000dc $a
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2022   .text:000000dc EliminaRebotes
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2071   .text:00000138 $d
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2075   .text:0000013c $a
+C:\Users\JAVIER\AppData\Local\Temp\ccrdXvgm.s:2158   .text:000001e8 $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS

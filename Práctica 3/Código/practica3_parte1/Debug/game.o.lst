@@ -1,0 +1,250 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"game.c"
+  21              	.Ltext0:
+  22              		.file 1 "../game.c"
+ 1984              		.align	2
+ 1985              		.global	game
+ 1987              	game:
+ 1988              	.LFB0:
+   1:../game.c     **** /*
+   2:../game.c     ****  * game.c
+   3:../game.c     ****  *
+   4:../game.c     ****  *  Created on: 06/05/2014
+   5:../game.c     ****  *      Author: usuario_local
+   6:../game.c     ****  */
+   7:../game.c     **** 
+   8:../game.c     **** #include "game.h"
+   9:../game.c     **** 
+  10:../game.c     **** extern char key;
+  11:../game.c     **** extern int modo;
+  12:../game.c     **** 
+  13:../game.c     **** void game() {
+ 1989              		.loc 1 13 0
+ 1990              		.cfi_startproc
+ 1991              		@ Function supports interworking.
+ 1992              		@ args = 0, pretend = 0, frame = 16
+ 1993              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1994 0000 0DC0A0E1 		mov	ip, sp
+ 1995              	.LCFI0:
+ 1996              		.cfi_def_cfa_register 12
+ 1997 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1998 0008 04B04CE2 		sub	fp, ip, #4
+ 1999              		.cfi_offset 14, -8
+ 2000              		.cfi_offset 13, -12
+ 2001              		.cfi_offset 11, -16
+ 2002              	.LCFI1:
+ 2003              		.cfi_def_cfa 11, 4
+ 2004 000c 10D04DE2 		sub	sp, sp, #16
+  14:../game.c     **** 
+  15:../game.c     **** 	tCola clave;
+  16:../game.c     **** 	clave = bucleLectura();
+ 2005              		.loc 1 16 0
+ 2006 0010 14304BE2 		sub	r3, fp, #20
+ 2007 0014 0300A0E1 		mov	r0, r3
+ 2008 0018 FEFFFFEB 		bl	bucleLectura
+  17:../game.c     **** 
+  18:../game.c     **** 	muestra(clave);
+ 2009              		.loc 1 18 0
+ 2010 001c 14304BE2 		sub	r3, fp, #20
+ 2011 0020 030093E8 		ldmia	r3, {r0, r1}
+ 2012 0024 FEFFFFEB 		bl	muestra
+  19:../game.c     **** 
+  20:../game.c     **** 	tCola introducida;
+  21:../game.c     **** 	introducida.elems = 0;
+ 2013              		.loc 1 21 0
+ 2014 0028 0030A0E3 		mov	r3, #0
+ 2015 002c B8314BE1 		strh	r3, [fp, #-24]	@ movhi
+ 2016              	.L6:
+  22:../game.c     **** 
+  23:../game.c     **** 	do {
+  24:../game.c     **** 		D8Led_symbol(0xf);
+ 2017              		.loc 1 24 0
+ 2018 0030 0F00A0E3 		mov	r0, #15
+ 2019 0034 FEFFFFEB 		bl	D8Led_symbol
+  25:../game.c     **** 
+  26:../game.c     **** 		buff.elems = 0;
+ 2020              		.loc 1 26 0
+ 2021 0038 8C309FE5 		ldr	r3, .L7
+ 2022 003c 0020A0E3 		mov	r2, #0
+ 2023 0040 B420C3E1 		strh	r2, [r3, #4]	@ movhi
+  27:../game.c     **** 		introducida = bucleLectura();
+ 2024              		.loc 1 27 0
+ 2025 0044 1C304BE2 		sub	r3, fp, #28
+ 2026 0048 0300A0E1 		mov	r0, r3
+ 2027 004c FEFFFFEB 		bl	bucleLectura
+  28:../game.c     **** 		muestra(introducida);
+ 2028              		.loc 1 28 0
+ 2029 0050 1C304BE2 		sub	r3, fp, #28
+ 2030 0054 030093E8 		ldmia	r3, {r0, r1}
+ 2031 0058 FEFFFFEB 		bl	muestra
+  29:../game.c     **** 
+  30:../game.c     **** 		introducida.elems = 0;
+ 2032              		.loc 1 30 0
+ 2033 005c 0030A0E3 		mov	r3, #0
+ 2034 0060 B8314BE1 		strh	r3, [fp, #-24]	@ movhi
+  31:../game.c     **** 		if(introducida.vector != clave.vector) {
+ 2035              		.loc 1 31 0
+ 2036 0064 1C201BE5 		ldr	r2, [fp, #-28]
+ 2037 0068 14301BE5 		ldr	r3, [fp, #-20]
+ 2038 006c 030052E1 		cmp	r2, r3
+ 2039 0070 0A00000A 		beq	.L2
+  32:../game.c     **** 			D8Led_symbol(0xE);
+ 2040              		.loc 1 32 0
+ 2041 0074 0E00A0E3 		mov	r0, #14
+ 2042 0078 FEFFFFEB 		bl	D8Led_symbol
+  33:../game.c     **** 			//error
+  34:../game.c     **** 			modo = 3;
+ 2043              		.loc 1 34 0
+ 2044 007c 4C309FE5 		ldr	r3, .L7+4
+ 2045 0080 0320A0E3 		mov	r2, #3
+ 2046 0084 002083E5 		str	r2, [r3, #0]
+  35:../game.c     **** 			while (modo == 3) {}
+ 2047              		.loc 1 35 0
+ 2048 0088 0000A0E1 		mov	r0, r0	@ nop
+ 2049              	.L3:
+ 2050              		.loc 1 35 0 is_stmt 0 discriminator 1
+ 2051 008c 3C309FE5 		ldr	r3, .L7+4
+ 2052 0090 003093E5 		ldr	r3, [r3, #0]
+ 2053 0094 030053E3 		cmp	r3, #3
+ 2054 0098 FBFFFF0A 		beq	.L3
+  36:../game.c     **** 		} else {
+  37:../game.c     **** 			D8Led_symbol(0xA);
+  38:../game.c     **** 			//acierto
+  39:../game.c     **** 			modo = 3;
+  40:../game.c     **** 			while (modo == 3) {}
+  41:../game.c     **** 		}
+  42:../game.c     **** 
+  43:../game.c     **** 	} while (1);
+ 2055              		.loc 1 43 0 is_stmt 1
+ 2056 009c E3FFFFEA 		b	.L6
+ 2057              	.L2:
+  37:../game.c     **** 			D8Led_symbol(0xA);
+ 2058              		.loc 1 37 0
+ 2059 00a0 0A00A0E3 		mov	r0, #10
+ 2060 00a4 FEFFFFEB 		bl	D8Led_symbol
+  39:../game.c     **** 			modo = 3;
+ 2061              		.loc 1 39 0
+ 2062 00a8 20309FE5 		ldr	r3, .L7+4
+ 2063 00ac 0320A0E3 		mov	r2, #3
+ 2064 00b0 002083E5 		str	r2, [r3, #0]
+  40:../game.c     **** 			while (modo == 3) {}
+ 2065              		.loc 1 40 0
+ 2066 00b4 0000A0E1 		mov	r0, r0	@ nop
+ 2067              	.L5:
+  40:../game.c     **** 			while (modo == 3) {}
+ 2068              		.loc 1 40 0 is_stmt 0 discriminator 1
+ 2069 00b8 10309FE5 		ldr	r3, .L7+4
+ 2070 00bc 003093E5 		ldr	r3, [r3, #0]
+ 2071 00c0 030053E3 		cmp	r3, #3
+ 2072 00c4 FBFFFF0A 		beq	.L5
+ 2073              		.loc 1 43 0 is_stmt 1
+ 2074 00c8 D8FFFFEA 		b	.L6
+ 2075              	.L8:
+ 2076              		.align	2
+ 2077              	.L7:
+ 2078 00cc 00000000 		.word	buff
+ 2079 00d0 00000000 		.word	modo
+ 2080              		.cfi_endproc
+ 2081              	.LFE0:
+ 2083              		.align	2
+ 2084              		.global	bucleLectura
+ 2086              	bucleLectura:
+ 2087              	.LFB1:
+  44:../game.c     **** 
+  45:../game.c     **** }
+  46:../game.c     **** 
+  47:../game.c     **** tCola bucleLectura() {
+ 2088              		.loc 1 47 0
+ 2089              		.cfi_startproc
+ 2090              		@ Function supports interworking.
+ 2091              		@ args = 0, pretend = 0, frame = 8
+ 2092              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2093 00d4 0DC0A0E1 		mov	ip, sp
+ 2094              	.LCFI2:
+ 2095              		.cfi_def_cfa_register 12
+ 2096 00d8 10D82DE9 		stmfd	sp!, {r4, fp, ip, lr, pc}
+ 2097 00dc 04B04CE2 		sub	fp, ip, #4
+ 2098              		.cfi_offset 14, -8
+ 2099              		.cfi_offset 13, -12
+ 2100              		.cfi_offset 11, -16
+ 2101              		.cfi_offset 4, -20
+ 2102              	.LCFI3:
+ 2103              		.cfi_def_cfa 11, 4
+ 2104 00e0 0CD04DE2 		sub	sp, sp, #12
+ 2105 00e4 0040A0E1 		mov	r4, r0
+  48:../game.c     **** 
+  49:../game.c     **** 	tCola clave;
+  50:../game.c     **** 
+  51:../game.c     **** 	while (key != 0xF || buff.elems < 4) {
+ 2106              		.loc 1 51 0
+ 2107 00e8 0000A0E1 		mov	r0, r0	@ nop
+ 2108              	.L10:
+ 2109              		.loc 1 51 0 is_stmt 0 discriminator 1
+ 2110 00ec 4C309FE5 		ldr	r3, .L11
+ 2111 00f0 0030D3E5 		ldrb	r3, [r3, #0]	@ zero_extendqisi2
+ 2112 00f4 0F0053E3 		cmp	r3, #15
+ 2113 00f8 FBFFFF1A 		bne	.L10
+ 2114              		.loc 1 51 0 discriminator 2
+ 2115 00fc 40309FE5 		ldr	r3, .L11+4
+ 2116 0100 B430D3E1 		ldrh	r3, [r3, #4]
+ 2117 0104 030053E3 		cmp	r3, #3
+ 2118 0108 F7FFFF9A 		bls	.L10
+  52:../game.c     **** 		//lectura por interrupciones
+  53:../game.c     **** 	};
+  54:../game.c     **** 
+  55:../game.c     **** 	asigna(&clave, buff);
+ 2119              		.loc 1 55 0 is_stmt 1
+ 2120 010c 1C204BE2 		sub	r2, fp, #28
+ 2121 0110 2C309FE5 		ldr	r3, .L11+4
+ 2122 0114 0200A0E1 		mov	r0, r2
+ 2123 0118 060093E8 		ldmia	r3, {r1, r2}
+ 2124 011c FEFFFFEB 		bl	asigna
+  56:../game.c     **** 
+  57:../game.c     **** 	//muestra(clave);
+  58:../game.c     **** 
+  59:../game.c     **** 	return clave;
+ 2125              		.loc 1 59 0
+ 2126 0120 0430A0E1 		mov	r3, r4
+ 2127 0124 1C204BE2 		sub	r2, fp, #28
+ 2128 0128 030092E8 		ldmia	r2, {r0, r1}
+ 2129 012c 030083E8 		stmia	r3, {r0, r1}
+  60:../game.c     **** }
+ 2130              		.loc 1 60 0
+ 2131 0130 0400A0E1 		mov	r0, r4
+ 2132 0134 10D04BE2 		sub	sp, fp, #16
+ 2133 0138 10689DE8 		ldmfd	sp, {r4, fp, sp, lr}
+ 2134 013c 1EFF2FE1 		bx	lr
+ 2135              	.L12:
+ 2136              		.align	2
+ 2137              	.L11:
+ 2138 0140 00000000 		.word	key
+ 2139 0144 00000000 		.word	buff
+ 2140              		.cfi_endproc
+ 2141              	.LFE1:
+ 2143              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 game.c
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:1984   .text:00000000 $a
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:1987   .text:00000000 game
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:2086   .text:000000d4 bucleLectura
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:2078   .text:000000cc $d
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:2083   .text:000000d4 $a
+C:\Users\USUARI~1\AppData\Local\Temp\ccm855h0.s:2138   .text:00000140 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+muestra
+D8Led_symbol
+buff
+modo
+asigna
+key

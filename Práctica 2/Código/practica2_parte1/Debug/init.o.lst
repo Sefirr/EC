@@ -1,0 +1,272 @@
+   1              	# 1 "../init.asm"
+   1              	.global start
+   0              	
+   0              	
+   0              	
+   2              	
+   3              	.global _ISR_STARTADDRESS
+   4              	
+   5              	.global DoUndef
+   6              	.global DoSWI
+   7              	.global DoDabort
+   8              	
+   9              	.global screen
+  10              	
+  11              	.extern main
+  12              	.extern ISR_Undef
+  13              	.extern ISR_SWI
+  14              	.extern ISR_FIQ
+  15              	.extern ISR_Pabort
+  16              	.extern ISR_Dabort
+  17              	
+  18              	.extern DoDetecta
+  19              	
+  20              	.equ 	_ISR_STARTADDRESS,	0xc7fff00		/* GCS6:64M DRAM/SDRAM 	*/
+  21              	.equ    UserStack,   _ISR_STARTADDRESS-0xf00         /* c7ff000 */
+  22              	.equ    SVCStack,    _ISR_STARTADDRESS-0xf00+256     /* c7ff100 */
+  23              	.equ    UndefStack,  _ISR_STARTADDRESS-0xf00+256*2   /* c7ff200 */
+  24              	.equ    AbortStack,  _ISR_STARTADDRESS-0xf00+256*3   /* c7ff300 */
+  25              	.equ    IRQStack,    _ISR_STARTADDRESS-0xf00+256*4   /* c7ff400 */
+  26              	.equ    FIQStack,    _ISR_STARTADDRESS-0xf00+256*5   /* c7ff500 */
+  27              	
+  28              	.equ    HandleReset,    _ISR_STARTADDRESS
+  29              	.equ    HandleUndef,    _ISR_STARTADDRESS+4
+  30              	.equ    HandleSWI,      _ISR_STARTADDRESS+4*2
+  31              	.equ    HandlePabort,   _ISR_STARTADDRESS+4*3
+  32              	.equ    HandleDabort,   _ISR_STARTADDRESS+4*4
+  33              	.equ    HandleReserved, _ISR_STARTADDRESS+4*5
+  34              	.equ    HandleIRQ,      _ISR_STARTADDRESS+4*6
+  35              	.equ    HandleFIQ,      _ISR_STARTADDRESS+4*7
+  36              	
+  37              	/* Simbolos para facilitar la codificación
+  38              	de los modos de ejecución */
+  39              	.equ 	USERMODE,	0x10
+  40              	.equ 	FIQMODE,	0x11
+  41              	.equ 	IRQMODE,	0x12
+  42              	.equ 	SVCMODE,	0x13
+  43              	.equ 	ABORTMODE,	0x17
+  44              	.equ 	UNDEFMODE,	0x1b
+  45              	.equ 	MODEMASK,	0x1f
+  46              	
+  47              	.equ 	NOINT,		0xc0   /* Máscara para deshabilitar interrupciones */
+  48              	.equ    IRQ_MODE,	0x40   /* deshabilitar interrupciones en modo IRQ  */
+  49              	.equ    FIQ_MODE,	0x80   /* deshabilitar interrupciones en modo FIQ  */
+  50              	
+  51              	.equ I_ISPR, 0x1e00020
+  52              	.equ EXTINTPND, 0x1d20054
+  53              	
+  54              	.text
+  55              	start:
+  56              	    /* Si comenzamos con un reset
+  57              	     el procesador esta en modo supervisor */
+  58 0000 1F00C0E3 	    bic	    r0,r0,#MODEMASK
+  59 0004 131080E3 	    orr	    r1,r0,#SVCMODE
+  60 0008 01F02FE1 	    msr	    cpsr_cxsf,r1 	    /* SVCMode */
+  61              	    /* Si comenzamos con un reset el procesador esta en modo supervisor */
+  62              	    /* Si comenzamos con un reset
+  63              	     el procesador esta en modo supervisor.
+  64              	     Tras InitStacks DEBEMOS seguir en modo supervisor*/
+  65 000c 090000EB 	    bl InitStacks
+  66              		
+  67              	    /* Seguimos en modo supervisor, configuramos
+  68              	       las direcciones de las rutinas de tratamiento
+  69              	       de excepciones */
+  70 0010 320000EB 	    bl InitISR
+  71              	
+  72              	    /* Pasamos a MODO USUARIO, inicializamos su pila
+  73              	      y ponemos a cero el frame pointer*/
+  74 0014 00000FE1 	    mrs	    r0,cpsr
+  75 0018 1F00C0E3 	   	bic	r0,r0,#MODEMASK
+  76 001c 101080E3 	    orr	r1,r0,#USERMODE
+  77 0020 8000C013 		BICNE   R0, R0, #0x80     // Habilita IRQ,
+  78 0024 01F02FE1 	    msr	cpsr_cxsf,r1 	    /* SVCMode */
+  79 0028 18D59FE5 	    ldr sp,=UserStack
+  80 002c 00B0A0E3 	    mov fp,#0
+  81              	
+  82              	    /* Saltamos a Main */
+  83 0030 FEFFFFEB 	    bl main
+  84 0034 FEFFFFEA 		b .
+  85              	InitStacks:
+  86              	    /* Código de la primera parte */
+  87              		/*TAREA 1a*/
+  88              		/*El alumno/a debe realizar la inicializacion de los punteros de pila (registros SP) de los modos 
+  89              		UndefMode,  AbortMode , IRQMode , FIQMode  y  SVCMode */
+  90              		/* Inicialización de la pila del modo UndefMode */
+  91 0038 00000FE1 		mrs r0, cpsr
+  92 003c 1F00C0E3 		bic r0, r0, #MODEMASK
+  93 0040 1B1080E3 		orr r1, r0, #UNDEFMODE
+  94 0044 01F02FE1 		msr cpsr_cxsf, r1
+  95 0048 FCD49FE5 		ldr sp, =UndefStack
+  96              		/* Inicialización de la pila del modo AbortMode */
+  97 004c 00000FE1 		mrs r0, cpsr
+  98 0050 1F00C0E3 		bic r0, r0, #MODEMASK
+  99 0054 171080E3 		orr r1, r0, #ABORTMODE
+ 100 0058 01F02FE1 		msr cpsr_cxsf, r1
+ 101 005c ECD49FE5 		ldr sp, =AbortStack
+ 102              		/* Inicialización de la pila del modo IRQMode */
+ 103 0060 00000FE1 		mrs r0, cpsr
+ 104 0064 1F00C0E3 		bic r0, r0, #MODEMASK
+ 105 0068 121080E3 		orr r1, r0, #IRQMODE
+ 106 006c 01F02FE1 		msr cpsr_cxsf, r1
+ 107 0070 DCD49FE5 		ldr sp, =IRQStack
+ 108              		/* Inicialización de la pila del modo FIQMode */
+ 109 0074 00000FE1 		mrs r0, cpsr
+ 110 0078 1F00C0E3 		bic r0, r0, #MODEMASK
+ 111 007c 111080E3 		orr r1, r0, #FIQMODE
+ 112 0080 01F02FE1 		msr cpsr_cxsf, r1
+ 113 0084 CCD49FE5 		ldr sp, =FIQStack
+ 114              		/* Inicialización de la pila del modo SVCMode */
+ 115 0088 00000FE1 		mrs r0, cpsr
+ 116 008c 1F00C0E3 		bic r0, r0, #MODEMASK
+ 117 0090 131080E3 		orr r1, r0, #SVCMODE
+ 118 0094 01F02FE1 		msr cpsr_cxsf, r1
+ 119 0098 BCD49FE5 		ldr sp, =SVCStack
+ 120              		/*Fin TAREA 1a*/
+ 121 009c 0EF0A0E1 	    mov pc, lr
+ 122              	
+ 123              	
+ 124              	//  Debemos comprobar la fuente de la interrupcion.
+ 125              	// Para ello habra que mirar en (INTOND o I_ISPR)??? y EXTINTPND
+ 126              	ISR_IRQ:
+ 127              		/*TAREA 2 definir la rutina ISR_IRQ*/
+ 128              		/*El alumno/a debe implementar esta rutina, que comprobara si se ha pulsado un boton, y si saltará
+ 129              		/*Ayuda: No olvideis que esta rutina debe cargar en PC la direccion de retorno al terminar*/
+ 130              		/*Ayuda: Los registros I_ISPR y EXTINTPND nos proporcionan informacion de las interrupciones pendi
+ 131 00a0 FF0F2DE9 		push {r0-r10, fp}
+ 132 00a4 2CB08DE2 		add fp, sp, #44
+ 133 00a8 B0049FE5 		ldr r0, =I_ISPR
+ 134 00ac B0149FE5 		ldr r1, =EXTINTPND
+ 135 00b0 000090E5 		ldr r0, [r0]
+ 136 00b4 000050E3 		cmp r0, #0x0
+ 137 00b8 0500000A 		beq fin
+ 138              	led1:
+ 139 00bc 040051E3 		cmp r1, #0x4 //Botón izquierdo
+ 140 00c0 0200000A 		beq detectado
+ 141              	led2:
+ 142 00c4 080051E3 		cmp r1, #0x8 //Botón derecho
+ 143 00c8 0000000A 		beq detectado
+ 144 00cc 0000001A 		bne fin
+ 145              	detectado:
+ 146 00d0 FEFFFFEB 		bl DoDetecta
+ 147              	fin:
+ 148 00d4 2CD04BE2 		sub sp, fp, #44
+ 149 00d8 FF0FBDE8 		pop {r0-r10, fp}
+ 150 00dc 04F05EE2 		subs pc, lr, #4
+ 151              	
+ 152              		/*Fin TAREA 2*/
+ 153              	
+ 154              	
+ 155              	InitISR:
+ 156              	    /* Código de la primera parte */
+ 157              		/*TAREA 1b*/
+ 158              		/*El alumno/a debe definir la tabla de direcciones de rutinas*/
+ 159              		/*Ayuda: las entradas de la tabla son HandleUndef,HandleDabort, HandlePabort, HandleIRQ, HandleSWI
+ 160              		// Tabla de direcciones de ISRs
+ 161              		//Direccion de la rutina de tratamiento de la excepción Undef
+ 162 00e0 80049FE5 		ldr r0, =ISR_Undef
+ 163 00e4 80149FE5 		ldr r1, =HandleUndef
+ 164 00e8 000081E5 		str r0, [r1]
+ 165              		//Direccion de la rutina de tratamiento de la excepción Dabort
+ 166 00ec 7C049FE5 		ldr r0, =ISR_Dabort
+ 167 00f0 7C149FE5 		ldr r1, =HandleDabort
+ 168 00f4 000081E5 		str r0, [r1]
+ 169              		//Direccion de la rutina de tratamiento de la excepción Pabort
+ 170 00f8 78049FE5 		ldr r0, =ISR_Pabort
+ 171 00fc 78149FE5 		ldr r1, =HandlePabort
+ 172 0100 000081E5 		str r0, [r1]
+ 173              		//Direccion de la rutina tratamiento de la excepción SWI
+ 174 0104 74049FE5 		ldr r0, =ISR_SWI
+ 175 0108 74149FE5 		ldr r1, =HandleSWI
+ 176 010c 000081E5 		str r0, [r1]
+ 177              		//Direccion de la rutina tratamiento de la excepción SWI
+ 178 0110 70049FE5 		ldr r0, =ISR_FIQ
+ 179 0114 70149FE5 		ldr r1, =HandleFIQ
+ 180 0118 000081E5 		str r0, [r1]
+ 181              		//Direccion de la rutina tratamiento de la excepción SWI
+ 182 011c 6C049FE5 		ldr r0, =ISR_IRQ
+ 183 0120 6C149FE5 		ldr r1, =HandleIRQ
+ 184 0124 000081E5 		str r0, [r1]
+ 185              		/*fin TAREA 1b*/
+ 186 0128 0EF0A0E1 		mov pc,lr
+ 187              	
+ 188              	
+ 189              	DoSWI:
+ 190 012c 000000EF 		swi #0
+ 191 0130 0EF0A0E1 		mov pc,lr
+ 192              	
+ 193              	DoUndef:
+ 194 0134 100000E6 		.word 0xE6000010
+ 195 0138 0EF0A0E1 		mov pc,lr
+ 196              	
+ 197              	DoDabort:
+ 198 013c 54049FE5 		ldr r0,=0x0a333333
+ 199 0140 000080E5 		str r0,[r0]
+ 200 0144 0EF0A0E1 		mov pc,lr
+ 201              	
+ 202              	
+ 203              	screen:
+ 204 0148 00000000 		.space 1024
+ 204      00000000 
+ 204      00000000 
+ 204      00000000 
+ 204      00000000 
+ 205              	
+ 206 0548 00F07F0C 	.end
+ 206      00F27F0C 
+ 206      00F37F0C 
+ 206      00F47F0C 
+ 206      00F57F0C 
+DEFINED SYMBOLS
+         ../init.asm:55     .text:00000000 start
+                            *ABS*:0c7fff00 _ISR_STARTADDRESS
+         ../init.asm:193    .text:00000134 DoUndef
+         ../init.asm:189    .text:0000012c DoSWI
+         ../init.asm:197    .text:0000013c DoDabort
+         ../init.asm:203    .text:00000148 screen
+         ../init.asm:21     *ABS*:0c7ff000 UserStack
+         ../init.asm:22     *ABS*:0c7ff100 SVCStack
+         ../init.asm:23     *ABS*:0c7ff200 UndefStack
+         ../init.asm:24     *ABS*:0c7ff300 AbortStack
+         ../init.asm:25     *ABS*:0c7ff400 IRQStack
+         ../init.asm:26     *ABS*:0c7ff500 FIQStack
+         ../init.asm:28     *ABS*:0c7fff00 HandleReset
+         ../init.asm:29     *ABS*:0c7fff04 HandleUndef
+         ../init.asm:30     *ABS*:0c7fff08 HandleSWI
+         ../init.asm:31     *ABS*:0c7fff0c HandlePabort
+         ../init.asm:32     *ABS*:0c7fff10 HandleDabort
+         ../init.asm:33     *ABS*:0c7fff14 HandleReserved
+         ../init.asm:34     *ABS*:0c7fff18 HandleIRQ
+         ../init.asm:35     *ABS*:0c7fff1c HandleFIQ
+         ../init.asm:39     *ABS*:00000010 USERMODE
+         ../init.asm:40     *ABS*:00000011 FIQMODE
+         ../init.asm:41     *ABS*:00000012 IRQMODE
+         ../init.asm:42     *ABS*:00000013 SVCMODE
+         ../init.asm:43     *ABS*:00000017 ABORTMODE
+         ../init.asm:44     *ABS*:0000001b UNDEFMODE
+         ../init.asm:45     *ABS*:0000001f MODEMASK
+         ../init.asm:47     *ABS*:000000c0 NOINT
+         ../init.asm:48     *ABS*:00000040 IRQ_MODE
+         ../init.asm:49     *ABS*:00000080 FIQ_MODE
+         ../init.asm:51     *ABS*:01e00020 I_ISPR
+         ../init.asm:52     *ABS*:01d20054 EXTINTPND
+         ../init.asm:58     .text:00000000 $a
+         ../init.asm:85     .text:00000038 InitStacks
+         ../init.asm:155    .text:000000e0 InitISR
+         ../init.asm:126    .text:000000a0 ISR_IRQ
+         ../init.asm:147    .text:000000d4 fin
+         ../init.asm:138    .text:000000bc led1
+         ../init.asm:145    .text:000000d0 detectado
+         ../init.asm:141    .text:000000c4 led2
+         ../init.asm:194    .text:00000134 $d
+         ../init.asm:195    .text:00000138 $a
+         ../init.asm:204    .text:00000148 $d
+                   .debug_aranges:0000000c $d
+
+UNDEFINED SYMBOLS
+main
+DoDetecta
+ISR_Undef
+ISR_Dabort
+ISR_Pabort
+ISR_SWI
+ISR_FIQ

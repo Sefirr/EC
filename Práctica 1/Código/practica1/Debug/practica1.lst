@@ -1,0 +1,687 @@
+
+practica1.elf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .bss          000000d0  0c000000  0c000000  00008000  2**2
+                  ALLOC
+  1 .text         00000628  0c0000d0  0c0000d0  000000d0  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  2 .ARM.attributes 0000002e  00000000  00000000  000006f8  2**0
+                  CONTENTS, READONLY
+  3 .comment      0000002a  00000000  00000000  00000726  2**0
+                  CONTENTS, READONLY
+  4 .debug_line   0000045b  00000000  00000000  00000750  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_info   0000045e  00000000  00000000  00000bab  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_abbrev 000001bf  00000000  00000000  00001009  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_aranges 00000080  00000000  00000000  000011c8  2**3
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_macinfo 00006ca4  00000000  00000000  00001248  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_loc    000000dc  00000000  00000000  00007eec  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .debug_pubnames 000000c8  00000000  00000000  00007fc8  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 11 .debug_pubtypes 00000060  00000000  00000000  00008090  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 12 .debug_str    0000013e  00000000  00000000  000080f0  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .debug_frame  000000c4  00000000  00000000  00008230  2**2
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+0c0000d0 <start>:
+    .extern main
+    .extern _stack
+	.global start
+
+start:
+    ldr sp,=_stack
+ c0000d0:	e59fd008 	ldr	sp, [pc, #8]	; c0000e0 <End+0x4>
+    mov fp,#0
+ c0000d4:	e3a0b000 	mov	fp, #0
+
+    bl main
+ c0000d8:	eb00006a 	bl	c000288 <main>
+
+0c0000dc <End>:
+
+End:
+    B End
+ c0000dc:	eafffffe 	b	c0000dc <End>
+ c0000e0:	0c7ff000 	.word	0x0c7ff000
+
+0c0000e4 <initRGB>:
+unsigned char imagenGris[N*M];
+unsigned char imagenBinaria[N*M];
+unsigned char imagenBorde[N*M];
+short int unosPorFila[N];
+
+void initRGB(pixelRGB m[], int nfilas, int ncols) {
+ c0000e4:	e1a0c00d 	mov	ip, sp
+ c0000e8:	e92dd800 	push	{fp, ip, lr, pc}
+ c0000ec:	e24cb004 	sub	fp, ip, #4
+ c0000f0:	e24dd018 	sub	sp, sp, #24
+ c0000f4:	e50b0018 	str	r0, [fp, #-24]	; 0xffffffe8
+ c0000f8:	e50b101c 	str	r1, [fp, #-28]	; 0xffffffe4
+ c0000fc:	e50b2020 	str	r2, [fp, #-32]	; 0xffffffe0
+
+    int i,j;
+    
+    for (i=0;i<nfilas;i++)
+ c000100:	e3a03000 	mov	r3, #0
+ c000104:	e50b3010 	str	r3, [fp, #-16]
+ c000108:	ea000057 	b	c00026c <initRGB+0x188>
+        for (j=0; j<ncols; j++) {
+ c00010c:	e3a03000 	mov	r3, #0
+ c000110:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c000114:	ea00004d 	b	c000250 <initRGB+0x16c>
+            m[i*ncols+j].R = (i+j)*FACTOR;
+ c000118:	e51b3010 	ldr	r3, [fp, #-16]
+ c00011c:	e51b2020 	ldr	r2, [fp, #-32]	; 0xffffffe0
+ c000120:	e0020293 	mul	r2, r3, r2
+ c000124:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000128:	e0823003 	add	r3, r2, r3
+ c00012c:	e1a02003 	mov	r2, r3
+ c000130:	e1a03002 	mov	r3, r2
+ c000134:	e1a03083 	lsl	r3, r3, #1
+ c000138:	e0833002 	add	r3, r3, r2
+ c00013c:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c000140:	e0822003 	add	r2, r2, r3
+ c000144:	e51b1010 	ldr	r1, [fp, #-16]
+ c000148:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c00014c:	e0813003 	add	r3, r1, r3
+ c000150:	e20330ff 	and	r3, r3, #255	; 0xff
+ c000154:	e1a01003 	mov	r1, r3
+ c000158:	e1a01101 	lsl	r1, r1, #2
+ c00015c:	e0813003 	add	r3, r1, r3
+ c000160:	e1a01003 	mov	r1, r3
+ c000164:	e1a00101 	lsl	r0, r1, #2
+ c000168:	e1a01003 	mov	r1, r3
+ c00016c:	e1a03000 	mov	r3, r0
+ c000170:	e0813003 	add	r3, r1, r3
+ c000174:	e20330ff 	and	r3, r3, #255	; 0xff
+ c000178:	e5c23000 	strb	r3, [r2]
+            m[i*ncols+j].G = (i+j)*FACTOR;
+ c00017c:	e51b3010 	ldr	r3, [fp, #-16]
+ c000180:	e51b2020 	ldr	r2, [fp, #-32]	; 0xffffffe0
+ c000184:	e0020293 	mul	r2, r3, r2
+ c000188:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c00018c:	e0823003 	add	r3, r2, r3
+ c000190:	e1a02003 	mov	r2, r3
+ c000194:	e1a03002 	mov	r3, r2
+ c000198:	e1a03083 	lsl	r3, r3, #1
+ c00019c:	e0833002 	add	r3, r3, r2
+ c0001a0:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c0001a4:	e0822003 	add	r2, r2, r3
+ c0001a8:	e51b1010 	ldr	r1, [fp, #-16]
+ c0001ac:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0001b0:	e0813003 	add	r3, r1, r3
+ c0001b4:	e20330ff 	and	r3, r3, #255	; 0xff
+ c0001b8:	e1a01003 	mov	r1, r3
+ c0001bc:	e1a01101 	lsl	r1, r1, #2
+ c0001c0:	e0813003 	add	r3, r1, r3
+ c0001c4:	e1a01003 	mov	r1, r3
+ c0001c8:	e1a00101 	lsl	r0, r1, #2
+ c0001cc:	e1a01003 	mov	r1, r3
+ c0001d0:	e1a03000 	mov	r3, r0
+ c0001d4:	e0813003 	add	r3, r1, r3
+ c0001d8:	e20330ff 	and	r3, r3, #255	; 0xff
+ c0001dc:	e5c23001 	strb	r3, [r2, #1]
+            m[i*ncols+j].B = (i+j)*FACTOR;
+ c0001e0:	e51b3010 	ldr	r3, [fp, #-16]
+ c0001e4:	e51b2020 	ldr	r2, [fp, #-32]	; 0xffffffe0
+ c0001e8:	e0020293 	mul	r2, r3, r2
+ c0001ec:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0001f0:	e0823003 	add	r3, r2, r3
+ c0001f4:	e1a02003 	mov	r2, r3
+ c0001f8:	e1a03002 	mov	r3, r2
+ c0001fc:	e1a03083 	lsl	r3, r3, #1
+ c000200:	e0833002 	add	r3, r3, r2
+ c000204:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c000208:	e0822003 	add	r2, r2, r3
+ c00020c:	e51b1010 	ldr	r1, [fp, #-16]
+ c000210:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000214:	e0813003 	add	r3, r1, r3
+ c000218:	e20330ff 	and	r3, r3, #255	; 0xff
+ c00021c:	e1a01003 	mov	r1, r3
+ c000220:	e1a01101 	lsl	r1, r1, #2
+ c000224:	e0813003 	add	r3, r1, r3
+ c000228:	e1a01003 	mov	r1, r3
+ c00022c:	e1a00101 	lsl	r0, r1, #2
+ c000230:	e1a01003 	mov	r1, r3
+ c000234:	e1a03000 	mov	r3, r0
+ c000238:	e0813003 	add	r3, r1, r3
+ c00023c:	e20330ff 	and	r3, r3, #255	; 0xff
+ c000240:	e5c23002 	strb	r3, [r2, #2]
+void initRGB(pixelRGB m[], int nfilas, int ncols) {
+
+    int i,j;
+    
+    for (i=0;i<nfilas;i++)
+        for (j=0; j<ncols; j++) {
+ c000244:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000248:	e2833001 	add	r3, r3, #1
+ c00024c:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c000250:	e51b2014 	ldr	r2, [fp, #-20]	; 0xffffffec
+ c000254:	e51b3020 	ldr	r3, [fp, #-32]	; 0xffffffe0
+ c000258:	e1520003 	cmp	r2, r3
+ c00025c:	baffffad 	blt	c000118 <initRGB+0x34>
+
+void initRGB(pixelRGB m[], int nfilas, int ncols) {
+
+    int i,j;
+    
+    for (i=0;i<nfilas;i++)
+ c000260:	e51b3010 	ldr	r3, [fp, #-16]
+ c000264:	e2833001 	add	r3, r3, #1
+ c000268:	e50b3010 	str	r3, [fp, #-16]
+ c00026c:	e51b2010 	ldr	r2, [fp, #-16]
+ c000270:	e51b301c 	ldr	r3, [fp, #-28]	; 0xffffffe4
+ c000274:	e1520003 	cmp	r2, r3
+ c000278:	baffffa3 	blt	c00010c <initRGB+0x28>
+        for (j=0; j<ncols; j++) {
+            m[i*ncols+j].R = (i+j)*FACTOR;
+            m[i*ncols+j].G = (i+j)*FACTOR;
+            m[i*ncols+j].B = (i+j)*FACTOR;
+        }
+}
+ c00027c:	e24bd00c 	sub	sp, fp, #12
+ c000280:	e89d6800 	ldm	sp, {fp, sp, lr}
+ c000284:	e12fff1e 	bx	lr
+
+0c000288 <main>:
+
+
+
+int main() {
+ c000288:	e1a0c00d 	mov	ip, sp
+ c00028c:	e92dd800 	push	{fp, ip, lr, pc}
+ c000290:	e24cb004 	sub	fp, ip, #4
+ c000294:	e24dd008 	sub	sp, sp, #8
+    
+    initRGB(imagenRGB,N,M);
+ c000298:	e59f0074 	ldr	r0, [pc, #116]	; c000314 <main+0x8c>
+ c00029c:	e3a01008 	mov	r1, #8
+ c0002a0:	e3a02004 	mov	r2, #4
+ c0002a4:	ebffff8e 	bl	c0000e4 <initRGB>
+    RGB2GrayMatrix(imagenRGB,imagenGris,N,M);
+ c0002a8:	e59f0064 	ldr	r0, [pc, #100]	; c000314 <main+0x8c>
+ c0002ac:	e59f1064 	ldr	r1, [pc, #100]	; c000318 <main+0x90>
+ c0002b0:	e3a02008 	mov	r2, #8
+ c0002b4:	e3a03004 	mov	r3, #4
+ c0002b8:	eb00005d 	bl	c000434 <RGB2GrayMatrix>
+    Gray2BinaryMatrix(imagenGris,imagenBinaria,127,N,M);
+ c0002bc:	e3a03004 	mov	r3, #4
+ c0002c0:	e58d3000 	str	r3, [sp]
+ c0002c4:	e59f004c 	ldr	r0, [pc, #76]	; c000318 <main+0x90>
+ c0002c8:	e59f104c 	ldr	r1, [pc, #76]	; c00031c <main+0x94>
+ c0002cc:	e3a0207f 	mov	r2, #127	; 0x7f
+ c0002d0:	e3a03008 	mov	r3, #8
+ c0002d4:	eb00008b 	bl	c000508 <Gray2BinaryMatrix>
+    contarUnos(imagenBinaria,unosPorFila,N,M);
+ c0002d8:	e59f003c 	ldr	r0, [pc, #60]	; c00031c <main+0x94>
+ c0002dc:	e59f103c 	ldr	r1, [pc, #60]	; c000320 <main+0x98>
+ c0002e0:	e3a02008 	mov	r2, #8
+ c0002e4:	e3a03004 	mov	r3, #4
+ c0002e8:	eb00000e 	bl	c000328 <contarUnos>
+    Binary2BordeMatrix(imagenBinaria, imagenBorde, N, M);
+ c0002ec:	e59f0028 	ldr	r0, [pc, #40]	; c00031c <main+0x94>
+ c0002f0:	e59f102c 	ldr	r1, [pc, #44]	; c000324 <main+0x9c>
+ c0002f4:	e3a02008 	mov	r2, #8
+ c0002f8:	e3a03004 	mov	r3, #4
+ c0002fc:	eb0000bf 	bl	c000600 <Binary2BordeMatrix>
+    return 0;
+ c000300:	e3a03000 	mov	r3, #0
+}
+ c000304:	e1a00003 	mov	r0, r3
+ c000308:	e24bd00c 	sub	sp, fp, #12
+ c00030c:	e89d6800 	ldm	sp, {fp, sp, lr}
+ c000310:	e12fff1e 	bx	lr
+ c000314:	0c000000 	.word	0x0c000000
+ c000318:	0c0000b0 	.word	0x0c0000b0
+ c00031c:	0c000060 	.word	0x0c000060
+ c000320:	0c000080 	.word	0x0c000080
+ c000324:	0c000090 	.word	0x0c000090
+
+0c000328 <contarUnos>:
+
+
+.text
+
+contarUnos:
+		push {r5 - r8}
+ c000328:	e92d01e0 	push	{r5, r6, r7, r8}
+
+		mov r5, #0
+ c00032c:	e3a05000 	mov	r5, #0
+
+0c000330 <fori>:
+fori:	cmp r5, r2
+ c000330:	e1550002 	cmp	r5, r2
+		bge fini
+ c000334:	aa00000d 	bge	c000370 <fini>
+
+		mov r8, #0
+ c000338:	e3a08000 	mov	r8, #0
+		mov r6, #0
+ c00033c:	e3a06000 	mov	r6, #0
+
+0c000340 <forj>:
+forj:	cmp r6, r3
+ c000340:	e1560003 	cmp	r6, r3
+		bge finj
+ c000344:	aa000005 	bge	c000360 <finj>
+			mul r7, r5, r3
+ c000348:	e0070395 	mul	r7, r5, r3
+			add r7, r7, r6
+ c00034c:	e0877006 	add	r7, r7, r6
+			ldrb r7, [r0, r7]
+ c000350:	e7d07007 	ldrb	r7, [r0, r7]
+			add r8, r8, r7
+ c000354:	e0888007 	add	r8, r8, r7
+
+			add r6, r6, #1
+ c000358:	e2866001 	add	r6, r6, #1
+			b forj
+ c00035c:	eafffff7 	b	c000340 <forj>
+
+0c000360 <finj>:
+finj:	lsl r7, r5, #1
+ c000360:	e1a07085 	lsl	r7, r5, #1
+		strh r8, [r1, r7]
+ c000364:	e18180b7 	strh	r8, [r1, r7]
+		add r5, r5, #1
+ c000368:	e2855001 	add	r5, r5, #1
+		b fori
+ c00036c:	eaffffef 	b	c000330 <fori>
+
+0c000370 <fini>:
+
+fini:	pop {r5 - r8}
+ c000370:	e8bd01e0 	pop	{r5, r6, r7, r8}
+		bx lr	
+ c000374:	e12fff1e 	bx	lr
+
+0c000378 <rgb2gray>:
+
+rgb2gray:
+		PUSH {R4-R10, FP, LR}
+ c000378:	e92d4ff0 	push	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
+		ADD FP, SP, #32
+ c00037c:	e28db020 	add	fp, sp, #32
+		MOV R4, #0
+ c000380:	e3a04000 	mov	r4, #0
+		LDRB R5, [R0]
+ c000384:	e5d05000 	ldrb	r5, [r0]
+		LDR R6, =0X084E
+ c000388:	e59f6094 	ldr	r6, [pc, #148]	; c000424 <pintar+0x8>
+		MUL R7, R5, R6
+ c00038c:	e0070695 	mul	r7, r5, r6
+		ADD R4, R4, R7
+ c000390:	e0844007 	add	r4, r4, r7
+		LDRB R5, [R0, #1]
+ c000394:	e5d05001 	ldrb	r5, [r0, #1]
+		LDR R6, =0X01BF0
+ c000398:	e59f6088 	ldr	r6, [pc, #136]	; c000428 <pintar+0xc>
+		MUL R7, R5, R6
+ c00039c:	e0070695 	mul	r7, r5, r6
+		ADD R4, R4, R7
+ c0003a0:	e0844007 	add	r4, r4, r7
+		LDRB R5, [R0, #2]
+ c0003a4:	e5d05002 	ldrb	r5, [r0, #2]
+		LDR R6, =0X02D2
+ c0003a8:	e59f607c 	ldr	r6, [pc, #124]	; c00042c <pintar+0x10>
+		MUL R7, R5, R6
+ c0003ac:	e0070695 	mul	r7, r5, r6
+		ADD R4, R4, R7
+ c0003b0:	e0844007 	add	r4, r4, r7
+		MOV R0, R4
+ c0003b4:	e1a00004 	mov	r0, r4
+		BL div10000
+ c0003b8:	eb000002 	bl	c0003c8 <div10000>
+		SUB SP, FP, #32
+ c0003bc:	e24bd020 	sub	sp, fp, #32
+		POP {R4-R10, FP, LR}
+ c0003c0:	e8bd4ff0 	pop	{r4, r5, r6, r7, r8, r9, sl, fp, lr}
+		bx lr
+ c0003c4:	e12fff1e 	bx	lr
+
+0c0003c8 <div10000>:
+
+div10000:
+		push {fp}
+ c0003c8:	e52db004 	push	{fp}		; (str fp, [sp, #-4]!)
+		LDR     R1, =0xD1B71758
+ c0003cc:	e59f105c 	ldr	r1, [pc, #92]	; c000430 <pintar+0x14>
+		UMULL   R3, R2, R0, R1
+ c0003d0:	e0823190 	umull	r3, r2, r0, r1
+		MOV     R0, R2,LSR#13
+ c0003d4:	e1a006a2 	lsr	r0, r2, #13
+ 		pop {fp}
+ c0003d8:	e49db004 	pop	{fp}		; (ldr fp, [sp], #4)
+ 		bx lr
+ c0003dc:	e12fff1e 	bx	lr
+
+0c0003e0 <verdadero>:
+
+verdadero:
+		push {R4-R6, FP}
+ c0003e0:	e92d0870 	push	{r4, r5, r6, fp}
+		ADD FP, SP, #12
+ c0003e4:	e28db00c 	add	fp, sp, #12
+		LDRB R4, [R0]
+ c0003e8:	e5d04000 	ldrb	r4, [r0]
+		LDRB R5, [R0, #-1]
+ c0003ec:	e5505001 	ldrb	r5, [r0, #-1]
+		LDRB R6, [R0, #-4]
+ c0003f0:	e5506004 	ldrb	r6, [r0, #-4]
+		cmp R4, #1
+ c0003f4:	e3540001 	cmp	r4, #1
+		BNE fin
+ c0003f8:	1a000004 	bne	c000410 <fin>
+		CMP R4, R5
+ c0003fc:	e1540005 	cmp	r4, r5
+		BNE pintar
+ c000400:	1a000005 	bne	c00041c <pintar>
+		CMP R4, R6
+ c000404:	e1540006 	cmp	r4, r6
+		BNE pintar
+ c000408:	1a000003 	bne	c00041c <pintar>
+		MOV R0, #0
+ c00040c:	e3a00000 	mov	r0, #0
+
+0c000410 <fin>:
+
+fin:
+		SUB SP, FP, #12
+ c000410:	e24bd00c 	sub	sp, fp, #12
+		pop {R4-R6, FP}
+ c000414:	e8bd0870 	pop	{r4, r5, r6, fp}
+		bx lr
+ c000418:	e12fff1e 	bx	lr
+
+0c00041c <pintar>:
+pintar:
+		MOV R0, #1
+ c00041c:	e3a00001 	mov	r0, #1
+		b fin
+ c000420:	eafffffa 	b	c000410 <fin>
+ c000424:	0000084e 	.word	0x0000084e
+ c000428:	00001bf0 	.word	0x00001bf0
+ c00042c:	000002d2 	.word	0x000002d2
+ c000430:	d1b71758 	.word	0xd1b71758
+
+0c000434 <RGB2GrayMatrix>:
+
+
+extern unsigned char rgb2gray(pixelRGB* pixel);
+extern int verdadero(unsigned char orig[]);
+
+void RGB2GrayMatrix(pixelRGB orig[], unsigned char dest[], int nfilas, int ncols) {
+ c000434:	e1a0c00d 	mov	ip, sp
+ c000438:	e92dd810 	push	{r4, fp, ip, lr, pc}
+ c00043c:	e24cb004 	sub	fp, ip, #4
+ c000440:	e24dd01c 	sub	sp, sp, #28
+ c000444:	e50b0020 	str	r0, [fp, #-32]	; 0xffffffe0
+ c000448:	e50b1024 	str	r1, [fp, #-36]	; 0xffffffdc
+ c00044c:	e50b2028 	str	r2, [fp, #-40]	; 0xffffffd8
+ c000450:	e50b302c 	str	r3, [fp, #-44]	; 0xffffffd4
+
+	int i, j;
+	for(i = 0; i < nfilas;i++){
+ c000454:	e3a03000 	mov	r3, #0
+ c000458:	e50b3018 	str	r3, [fp, #-24]	; 0xffffffe8
+ c00045c:	ea000022 	b	c0004ec <RGB2GrayMatrix+0xb8>
+		for(j = 0; j<ncols; j++){
+ c000460:	e3a03000 	mov	r3, #0
+ c000464:	e50b301c 	str	r3, [fp, #-28]	; 0xffffffe4
+ c000468:	ea000018 	b	c0004d0 <RGB2GrayMatrix+0x9c>
+			dest[i*ncols + j] = rgb2gray(orig + (i*ncols + j));
+ c00046c:	e51b3018 	ldr	r3, [fp, #-24]	; 0xffffffe8
+ c000470:	e51b202c 	ldr	r2, [fp, #-44]	; 0xffffffd4
+ c000474:	e0020293 	mul	r2, r3, r2
+ c000478:	e51b301c 	ldr	r3, [fp, #-28]	; 0xffffffe4
+ c00047c:	e0823003 	add	r3, r2, r3
+ c000480:	e51b2024 	ldr	r2, [fp, #-36]	; 0xffffffdc
+ c000484:	e0824003 	add	r4, r2, r3
+ c000488:	e51b3018 	ldr	r3, [fp, #-24]	; 0xffffffe8
+ c00048c:	e51b202c 	ldr	r2, [fp, #-44]	; 0xffffffd4
+ c000490:	e0020293 	mul	r2, r3, r2
+ c000494:	e51b301c 	ldr	r3, [fp, #-28]	; 0xffffffe4
+ c000498:	e0823003 	add	r3, r2, r3
+ c00049c:	e1a02003 	mov	r2, r3
+ c0004a0:	e1a03002 	mov	r3, r2
+ c0004a4:	e1a03083 	lsl	r3, r3, #1
+ c0004a8:	e0833002 	add	r3, r3, r2
+ c0004ac:	e51b2020 	ldr	r2, [fp, #-32]	; 0xffffffe0
+ c0004b0:	e0823003 	add	r3, r2, r3
+ c0004b4:	e1a00003 	mov	r0, r3
+ c0004b8:	ebffffae 	bl	c000378 <rgb2gray>
+ c0004bc:	e1a03000 	mov	r3, r0
+ c0004c0:	e5c43000 	strb	r3, [r4]
+
+void RGB2GrayMatrix(pixelRGB orig[], unsigned char dest[], int nfilas, int ncols) {
+
+	int i, j;
+	for(i = 0; i < nfilas;i++){
+		for(j = 0; j<ncols; j++){
+ c0004c4:	e51b301c 	ldr	r3, [fp, #-28]	; 0xffffffe4
+ c0004c8:	e2833001 	add	r3, r3, #1
+ c0004cc:	e50b301c 	str	r3, [fp, #-28]	; 0xffffffe4
+ c0004d0:	e51b201c 	ldr	r2, [fp, #-28]	; 0xffffffe4
+ c0004d4:	e51b302c 	ldr	r3, [fp, #-44]	; 0xffffffd4
+ c0004d8:	e1520003 	cmp	r2, r3
+ c0004dc:	baffffe2 	blt	c00046c <RGB2GrayMatrix+0x38>
+extern int verdadero(unsigned char orig[]);
+
+void RGB2GrayMatrix(pixelRGB orig[], unsigned char dest[], int nfilas, int ncols) {
+
+	int i, j;
+	for(i = 0; i < nfilas;i++){
+ c0004e0:	e51b3018 	ldr	r3, [fp, #-24]	; 0xffffffe8
+ c0004e4:	e2833001 	add	r3, r3, #1
+ c0004e8:	e50b3018 	str	r3, [fp, #-24]	; 0xffffffe8
+ c0004ec:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c0004f0:	e51b3028 	ldr	r3, [fp, #-40]	; 0xffffffd8
+ c0004f4:	e1520003 	cmp	r2, r3
+ c0004f8:	baffffd8 	blt	c000460 <RGB2GrayMatrix+0x2c>
+			dest[i*ncols + j] = rgb2gray(orig + (i*ncols + j));
+		}
+	}
+
+
+}
+ c0004fc:	e24bd010 	sub	sp, fp, #16
+ c000500:	e89d6810 	ldm	sp, {r4, fp, sp, lr}
+ c000504:	e12fff1e 	bx	lr
+
+0c000508 <Gray2BinaryMatrix>:
+
+void Gray2BinaryMatrix(unsigned char orig[], unsigned char dest[], unsigned char umbral, int nfilas, int ncols) {
+ c000508:	e1a0c00d 	mov	ip, sp
+ c00050c:	e92dd800 	push	{fp, ip, lr, pc}
+ c000510:	e24cb004 	sub	fp, ip, #4
+ c000514:	e24dd018 	sub	sp, sp, #24
+ c000518:	e50b0018 	str	r0, [fp, #-24]	; 0xffffffe8
+ c00051c:	e50b101c 	str	r1, [fp, #-28]	; 0xffffffe4
+ c000520:	e50b3024 	str	r3, [fp, #-36]	; 0xffffffdc
+ c000524:	e1a03002 	mov	r3, r2
+ c000528:	e54b301d 	strb	r3, [fp, #-29]	; 0xffffffe3
+    
+	int i,j;
+
+    for (i=0;i<nfilas;i++) {
+ c00052c:	e3a03000 	mov	r3, #0
+ c000530:	e50b3010 	str	r3, [fp, #-16]
+ c000534:	ea00002a 	b	c0005e4 <Gray2BinaryMatrix+0xdc>
+    	for (j=0;j<ncols;j++) {
+ c000538:	e3a03000 	mov	r3, #0
+ c00053c:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c000540:	ea000020 	b	c0005c8 <Gray2BinaryMatrix+0xc0>
+    		if (orig[i*ncols + j] > umbral)
+ c000544:	e51b3010 	ldr	r3, [fp, #-16]
+ c000548:	e59b2004 	ldr	r2, [fp, #4]
+ c00054c:	e0020293 	mul	r2, r3, r2
+ c000550:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000554:	e0823003 	add	r3, r2, r3
+ c000558:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c00055c:	e0823003 	add	r3, r2, r3
+ c000560:	e5d33000 	ldrb	r3, [r3]
+ c000564:	e55b201d 	ldrb	r2, [fp, #-29]	; 0xffffffe3
+ c000568:	e1520003 	cmp	r2, r3
+ c00056c:	2a000009 	bcs	c000598 <Gray2BinaryMatrix+0x90>
+    			dest[i*ncols + j]= 1;
+ c000570:	e51b3010 	ldr	r3, [fp, #-16]
+ c000574:	e59b2004 	ldr	r2, [fp, #4]
+ c000578:	e0020293 	mul	r2, r3, r2
+ c00057c:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000580:	e0823003 	add	r3, r2, r3
+ c000584:	e51b201c 	ldr	r2, [fp, #-28]	; 0xffffffe4
+ c000588:	e0823003 	add	r3, r2, r3
+ c00058c:	e3a02001 	mov	r2, #1
+ c000590:	e5c32000 	strb	r2, [r3]
+ c000594:	ea000008 	b	c0005bc <Gray2BinaryMatrix+0xb4>
+    		else
+    			dest[i*ncols + j]= 0;
+ c000598:	e51b3010 	ldr	r3, [fp, #-16]
+ c00059c:	e59b2004 	ldr	r2, [fp, #4]
+ c0005a0:	e0020293 	mul	r2, r3, r2
+ c0005a4:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0005a8:	e0823003 	add	r3, r2, r3
+ c0005ac:	e51b201c 	ldr	r2, [fp, #-28]	; 0xffffffe4
+ c0005b0:	e0823003 	add	r3, r2, r3
+ c0005b4:	e3a02000 	mov	r2, #0
+ c0005b8:	e5c32000 	strb	r2, [r3]
+void Gray2BinaryMatrix(unsigned char orig[], unsigned char dest[], unsigned char umbral, int nfilas, int ncols) {
+    
+	int i,j;
+
+    for (i=0;i<nfilas;i++) {
+    	for (j=0;j<ncols;j++) {
+ c0005bc:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0005c0:	e2833001 	add	r3, r3, #1
+ c0005c4:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c0005c8:	e51b2014 	ldr	r2, [fp, #-20]	; 0xffffffec
+ c0005cc:	e59b3004 	ldr	r3, [fp, #4]
+ c0005d0:	e1520003 	cmp	r2, r3
+ c0005d4:	baffffda 	blt	c000544 <Gray2BinaryMatrix+0x3c>
+
+void Gray2BinaryMatrix(unsigned char orig[], unsigned char dest[], unsigned char umbral, int nfilas, int ncols) {
+    
+	int i,j;
+
+    for (i=0;i<nfilas;i++) {
+ c0005d8:	e51b3010 	ldr	r3, [fp, #-16]
+ c0005dc:	e2833001 	add	r3, r3, #1
+ c0005e0:	e50b3010 	str	r3, [fp, #-16]
+ c0005e4:	e51b2010 	ldr	r2, [fp, #-16]
+ c0005e8:	e51b3024 	ldr	r3, [fp, #-36]	; 0xffffffdc
+ c0005ec:	e1520003 	cmp	r2, r3
+ c0005f0:	baffffd0 	blt	c000538 <Gray2BinaryMatrix+0x30>
+    			dest[i*ncols + j]= 0;
+    	}
+    }
+
+
+}
+ c0005f4:	e24bd00c 	sub	sp, fp, #12
+ c0005f8:	e89d6800 	ldm	sp, {fp, sp, lr}
+ c0005fc:	e12fff1e 	bx	lr
+
+0c000600 <Binary2BordeMatrix>:
+
+void Binary2BordeMatrix(unsigned char orig[], unsigned char dest[], int nfilas, int ncols){
+ c000600:	e1a0c00d 	mov	ip, sp
+ c000604:	e92dd800 	push	{fp, ip, lr, pc}
+ c000608:	e24cb004 	sub	fp, ip, #4
+ c00060c:	e24dd018 	sub	sp, sp, #24
+ c000610:	e50b0018 	str	r0, [fp, #-24]	; 0xffffffe8
+ c000614:	e50b101c 	str	r1, [fp, #-28]	; 0xffffffe4
+ c000618:	e50b2020 	str	r2, [fp, #-32]	; 0xffffffe0
+ c00061c:	e50b3024 	str	r3, [fp, #-36]	; 0xffffffdc
+
+	int i, j;
+
+    for (i=0;i<nfilas;i++) {
+ c000620:	e3a03000 	mov	r3, #0
+ c000624:	e50b3010 	str	r3, [fp, #-16]
+ c000628:	ea00002b 	b	c0006dc <Binary2BordeMatrix+0xdc>
+     	for (j=0;j<ncols;j++) {
+ c00062c:	e3a03000 	mov	r3, #0
+ c000630:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c000634:	ea000021 	b	c0006c0 <Binary2BordeMatrix+0xc0>
+     		if(verdadero(&orig[i*ncols + j]) == 1)
+ c000638:	e51b3010 	ldr	r3, [fp, #-16]
+ c00063c:	e51b2024 	ldr	r2, [fp, #-36]	; 0xffffffdc
+ c000640:	e0020293 	mul	r2, r3, r2
+ c000644:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000648:	e0823003 	add	r3, r2, r3
+ c00064c:	e51b2018 	ldr	r2, [fp, #-24]	; 0xffffffe8
+ c000650:	e0823003 	add	r3, r2, r3
+ c000654:	e1a00003 	mov	r0, r3
+ c000658:	ebffff60 	bl	c0003e0 <verdadero>
+ c00065c:	e1a03000 	mov	r3, r0
+ c000660:	e3530001 	cmp	r3, #1
+ c000664:	1a000009 	bne	c000690 <Binary2BordeMatrix+0x90>
+     			dest[i*ncols + j]= 1;
+ c000668:	e51b3010 	ldr	r3, [fp, #-16]
+ c00066c:	e51b2024 	ldr	r2, [fp, #-36]	; 0xffffffdc
+ c000670:	e0020293 	mul	r2, r3, r2
+ c000674:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c000678:	e0823003 	add	r3, r2, r3
+ c00067c:	e51b201c 	ldr	r2, [fp, #-28]	; 0xffffffe4
+ c000680:	e0823003 	add	r3, r2, r3
+ c000684:	e3a02001 	mov	r2, #1
+ c000688:	e5c32000 	strb	r2, [r3]
+ c00068c:	ea000008 	b	c0006b4 <Binary2BordeMatrix+0xb4>
+     		else
+     			dest[i*ncols + j]= 0;
+ c000690:	e51b3010 	ldr	r3, [fp, #-16]
+ c000694:	e51b2024 	ldr	r2, [fp, #-36]	; 0xffffffdc
+ c000698:	e0020293 	mul	r2, r3, r2
+ c00069c:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0006a0:	e0823003 	add	r3, r2, r3
+ c0006a4:	e51b201c 	ldr	r2, [fp, #-28]	; 0xffffffe4
+ c0006a8:	e0823003 	add	r3, r2, r3
+ c0006ac:	e3a02000 	mov	r2, #0
+ c0006b0:	e5c32000 	strb	r2, [r3]
+void Binary2BordeMatrix(unsigned char orig[], unsigned char dest[], int nfilas, int ncols){
+
+	int i, j;
+
+    for (i=0;i<nfilas;i++) {
+     	for (j=0;j<ncols;j++) {
+ c0006b4:	e51b3014 	ldr	r3, [fp, #-20]	; 0xffffffec
+ c0006b8:	e2833001 	add	r3, r3, #1
+ c0006bc:	e50b3014 	str	r3, [fp, #-20]	; 0xffffffec
+ c0006c0:	e51b2014 	ldr	r2, [fp, #-20]	; 0xffffffec
+ c0006c4:	e51b3024 	ldr	r3, [fp, #-36]	; 0xffffffdc
+ c0006c8:	e1520003 	cmp	r2, r3
+ c0006cc:	baffffd9 	blt	c000638 <Binary2BordeMatrix+0x38>
+
+void Binary2BordeMatrix(unsigned char orig[], unsigned char dest[], int nfilas, int ncols){
+
+	int i, j;
+
+    for (i=0;i<nfilas;i++) {
+ c0006d0:	e51b3010 	ldr	r3, [fp, #-16]
+ c0006d4:	e2833001 	add	r3, r3, #1
+ c0006d8:	e50b3010 	str	r3, [fp, #-16]
+ c0006dc:	e51b2010 	ldr	r2, [fp, #-16]
+ c0006e0:	e51b3020 	ldr	r3, [fp, #-32]	; 0xffffffe0
+ c0006e4:	e1520003 	cmp	r2, r3
+ c0006e8:	baffffcf 	blt	c00062c <Binary2BordeMatrix+0x2c>
+     		else
+     			dest[i*ncols + j]= 0;
+     	}
+    }
+
+}
+ c0006ec:	e24bd00c 	sub	sp, fp, #12
+ c0006f0:	e89d6800 	ldm	sp, {fp, sp, lr}
+ c0006f4:	e12fff1e 	bx	lr

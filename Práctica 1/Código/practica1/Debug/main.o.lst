@@ -1,0 +1,284 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"main.c"
+  21              	.Ltext0:
+  22              		.file 1 "../main.c"
+ 1992              		.align	2
+ 1993              		.global	initRGB
+ 1995              	initRGB:
+ 1996              	.LFB0:
+   1:../main.c     **** #include <stdio.h>
+   2:../main.c     **** #include "trafo.h"
+   3:../main.c     **** #include "types.h"
+   4:../main.c     **** 
+   5:../main.c     **** #define N 8
+   6:../main.c     **** #define M 4
+   7:../main.c     **** 
+   8:../main.c     **** 
+   9:../main.c     **** #define FACTOR ( (unsigned char) ( 255/(N+M-2) ) )
+  10:../main.c     **** 
+  11:../main.c     **** extern void contarUnos(unsigned char mat[], short int vector[],int nfilas, int ncols);
+  12:../main.c     **** 
+  13:../main.c     **** 
+  14:../main.c     **** 
+  15:../main.c     **** pixelRGB imagenRGB[N*M];
+  16:../main.c     **** unsigned char imagenGris[N*M];
+  17:../main.c     **** unsigned char imagenBinaria[N*M];
+  18:../main.c     **** unsigned char imagenBorde[N*M];
+  19:../main.c     **** short int unosPorFila[N];
+  20:../main.c     **** 
+  21:../main.c     **** void initRGB(pixelRGB m[], int nfilas, int ncols) {
+ 1997              		.loc 1 21 0
+ 1998              		.cfi_startproc
+ 1999              		@ Function supports interworking.
+ 2000              		@ args = 0, pretend = 0, frame = 24
+ 2001              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2002 0000 0DC0A0E1 		mov	ip, sp
+ 2003              	.LCFI0:
+ 2004              		.cfi_def_cfa_register 12
+ 2005 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2006 0008 04B04CE2 		sub	fp, ip, #4
+ 2007              		.cfi_offset 14, -8
+ 2008              		.cfi_offset 13, -12
+ 2009              		.cfi_offset 11, -16
+ 2010              	.LCFI1:
+ 2011              		.cfi_def_cfa 11, 4
+ 2012 000c 18D04DE2 		sub	sp, sp, #24
+ 2013 0010 18000BE5 		str	r0, [fp, #-24]
+ 2014 0014 1C100BE5 		str	r1, [fp, #-28]
+ 2015 0018 20200BE5 		str	r2, [fp, #-32]
+  22:../main.c     **** 
+  23:../main.c     ****     int i,j;
+  24:../main.c     ****     
+  25:../main.c     ****     for (i=0;i<nfilas;i++)
+ 2016              		.loc 1 25 0
+ 2017 001c 0030A0E3 		mov	r3, #0
+ 2018 0020 10300BE5 		str	r3, [fp, #-16]
+ 2019 0024 570000EA 		b	.L2
+ 2020              	.L5:
+  26:../main.c     ****         for (j=0; j<ncols; j++) {
+ 2021              		.loc 1 26 0
+ 2022 0028 0030A0E3 		mov	r3, #0
+ 2023 002c 14300BE5 		str	r3, [fp, #-20]
+ 2024 0030 4D0000EA 		b	.L3
+ 2025              	.L4:
+  27:../main.c     ****             m[i*ncols+j].R = (i+j)*FACTOR;
+ 2026              		.loc 1 27 0 discriminator 2
+ 2027 0034 10301BE5 		ldr	r3, [fp, #-16]
+ 2028 0038 20201BE5 		ldr	r2, [fp, #-32]
+ 2029 003c 930202E0 		mul	r2, r3, r2
+ 2030 0040 14301BE5 		ldr	r3, [fp, #-20]
+ 2031 0044 033082E0 		add	r3, r2, r3
+ 2032 0048 0320A0E1 		mov	r2, r3
+ 2033 004c 0230A0E1 		mov	r3, r2
+ 2034 0050 8330A0E1 		mov	r3, r3, asl #1
+ 2035 0054 023083E0 		add	r3, r3, r2
+ 2036 0058 18201BE5 		ldr	r2, [fp, #-24]
+ 2037 005c 032082E0 		add	r2, r2, r3
+ 2038 0060 10101BE5 		ldr	r1, [fp, #-16]
+ 2039 0064 14301BE5 		ldr	r3, [fp, #-20]
+ 2040 0068 033081E0 		add	r3, r1, r3
+ 2041 006c FF3003E2 		and	r3, r3, #255
+ 2042 0070 0310A0E1 		mov	r1, r3
+ 2043 0074 0111A0E1 		mov	r1, r1, asl #2
+ 2044 0078 033081E0 		add	r3, r1, r3
+ 2045 007c 0310A0E1 		mov	r1, r3
+ 2046 0080 0101A0E1 		mov	r0, r1, asl #2
+ 2047 0084 0310A0E1 		mov	r1, r3
+ 2048 0088 0030A0E1 		mov	r3, r0
+ 2049 008c 033081E0 		add	r3, r1, r3
+ 2050 0090 FF3003E2 		and	r3, r3, #255
+ 2051 0094 0030C2E5 		strb	r3, [r2, #0]
+  28:../main.c     ****             m[i*ncols+j].G = (i+j)*FACTOR;
+ 2052              		.loc 1 28 0 discriminator 2
+ 2053 0098 10301BE5 		ldr	r3, [fp, #-16]
+ 2054 009c 20201BE5 		ldr	r2, [fp, #-32]
+ 2055 00a0 930202E0 		mul	r2, r3, r2
+ 2056 00a4 14301BE5 		ldr	r3, [fp, #-20]
+ 2057 00a8 033082E0 		add	r3, r2, r3
+ 2058 00ac 0320A0E1 		mov	r2, r3
+ 2059 00b0 0230A0E1 		mov	r3, r2
+ 2060 00b4 8330A0E1 		mov	r3, r3, asl #1
+ 2061 00b8 023083E0 		add	r3, r3, r2
+ 2062 00bc 18201BE5 		ldr	r2, [fp, #-24]
+ 2063 00c0 032082E0 		add	r2, r2, r3
+ 2064 00c4 10101BE5 		ldr	r1, [fp, #-16]
+ 2065 00c8 14301BE5 		ldr	r3, [fp, #-20]
+ 2066 00cc 033081E0 		add	r3, r1, r3
+ 2067 00d0 FF3003E2 		and	r3, r3, #255
+ 2068 00d4 0310A0E1 		mov	r1, r3
+ 2069 00d8 0111A0E1 		mov	r1, r1, asl #2
+ 2070 00dc 033081E0 		add	r3, r1, r3
+ 2071 00e0 0310A0E1 		mov	r1, r3
+ 2072 00e4 0101A0E1 		mov	r0, r1, asl #2
+ 2073 00e8 0310A0E1 		mov	r1, r3
+ 2074 00ec 0030A0E1 		mov	r3, r0
+ 2075 00f0 033081E0 		add	r3, r1, r3
+ 2076 00f4 FF3003E2 		and	r3, r3, #255
+ 2077 00f8 0130C2E5 		strb	r3, [r2, #1]
+  29:../main.c     ****             m[i*ncols+j].B = (i+j)*FACTOR;
+ 2078              		.loc 1 29 0 discriminator 2
+ 2079 00fc 10301BE5 		ldr	r3, [fp, #-16]
+ 2080 0100 20201BE5 		ldr	r2, [fp, #-32]
+ 2081 0104 930202E0 		mul	r2, r3, r2
+ 2082 0108 14301BE5 		ldr	r3, [fp, #-20]
+ 2083 010c 033082E0 		add	r3, r2, r3
+ 2084 0110 0320A0E1 		mov	r2, r3
+ 2085 0114 0230A0E1 		mov	r3, r2
+ 2086 0118 8330A0E1 		mov	r3, r3, asl #1
+ 2087 011c 023083E0 		add	r3, r3, r2
+ 2088 0120 18201BE5 		ldr	r2, [fp, #-24]
+ 2089 0124 032082E0 		add	r2, r2, r3
+ 2090 0128 10101BE5 		ldr	r1, [fp, #-16]
+ 2091 012c 14301BE5 		ldr	r3, [fp, #-20]
+ 2092 0130 033081E0 		add	r3, r1, r3
+ 2093 0134 FF3003E2 		and	r3, r3, #255
+ 2094 0138 0310A0E1 		mov	r1, r3
+ 2095 013c 0111A0E1 		mov	r1, r1, asl #2
+ 2096 0140 033081E0 		add	r3, r1, r3
+ 2097 0144 0310A0E1 		mov	r1, r3
+ 2098 0148 0101A0E1 		mov	r0, r1, asl #2
+ 2099 014c 0310A0E1 		mov	r1, r3
+ 2100 0150 0030A0E1 		mov	r3, r0
+ 2101 0154 033081E0 		add	r3, r1, r3
+ 2102 0158 FF3003E2 		and	r3, r3, #255
+ 2103 015c 0230C2E5 		strb	r3, [r2, #2]
+  26:../main.c     ****         for (j=0; j<ncols; j++) {
+ 2104              		.loc 1 26 0 discriminator 2
+ 2105 0160 14301BE5 		ldr	r3, [fp, #-20]
+ 2106 0164 013083E2 		add	r3, r3, #1
+ 2107 0168 14300BE5 		str	r3, [fp, #-20]
+ 2108              	.L3:
+  26:../main.c     ****         for (j=0; j<ncols; j++) {
+ 2109              		.loc 1 26 0 is_stmt 0 discriminator 1
+ 2110 016c 14201BE5 		ldr	r2, [fp, #-20]
+ 2111 0170 20301BE5 		ldr	r3, [fp, #-32]
+ 2112 0174 030052E1 		cmp	r2, r3
+ 2113 0178 ADFFFFBA 		blt	.L4
+  25:../main.c     ****     for (i=0;i<nfilas;i++)
+ 2114              		.loc 1 25 0 is_stmt 1
+ 2115 017c 10301BE5 		ldr	r3, [fp, #-16]
+ 2116 0180 013083E2 		add	r3, r3, #1
+ 2117 0184 10300BE5 		str	r3, [fp, #-16]
+ 2118              	.L2:
+  25:../main.c     ****     for (i=0;i<nfilas;i++)
+ 2119              		.loc 1 25 0 is_stmt 0 discriminator 1
+ 2120 0188 10201BE5 		ldr	r2, [fp, #-16]
+ 2121 018c 1C301BE5 		ldr	r3, [fp, #-28]
+ 2122 0190 030052E1 		cmp	r2, r3
+ 2123 0194 A3FFFFBA 		blt	.L5
+  30:../main.c     ****         }
+  31:../main.c     **** }
+ 2124              		.loc 1 31 0 is_stmt 1
+ 2125 0198 0CD04BE2 		sub	sp, fp, #12
+ 2126 019c 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2127 01a0 1EFF2FE1 		bx	lr
+ 2128              		.cfi_endproc
+ 2129              	.LFE0:
+ 2131              		.align	2
+ 2132              		.global	main
+ 2134              	main:
+ 2135              	.LFB1:
+  32:../main.c     **** 
+  33:../main.c     **** 
+  34:../main.c     **** 
+  35:../main.c     **** int main() {
+ 2136              		.loc 1 35 0
+ 2137              		.cfi_startproc
+ 2138              		@ Function supports interworking.
+ 2139              		@ args = 0, pretend = 0, frame = 0
+ 2140              		@ frame_needed = 1, uses_anonymous_args = 0
+ 2141 01a4 0DC0A0E1 		mov	ip, sp
+ 2142              	.LCFI2:
+ 2143              		.cfi_def_cfa_register 12
+ 2144 01a8 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 2145 01ac 04B04CE2 		sub	fp, ip, #4
+ 2146              		.cfi_offset 14, -8
+ 2147              		.cfi_offset 13, -12
+ 2148              		.cfi_offset 11, -16
+ 2149              	.LCFI3:
+ 2150              		.cfi_def_cfa 11, 4
+ 2151 01b0 08D04DE2 		sub	sp, sp, #8
+  36:../main.c     ****     
+  37:../main.c     ****     initRGB(imagenRGB,N,M);
+ 2152              		.loc 1 37 0
+ 2153 01b4 74009FE5 		ldr	r0, .L7
+ 2154 01b8 0810A0E3 		mov	r1, #8
+ 2155 01bc 0420A0E3 		mov	r2, #4
+ 2156 01c0 FEFFFFEB 		bl	initRGB
+  38:../main.c     ****     RGB2GrayMatrix(imagenRGB,imagenGris,N,M);
+ 2157              		.loc 1 38 0
+ 2158 01c4 64009FE5 		ldr	r0, .L7
+ 2159 01c8 64109FE5 		ldr	r1, .L7+4
+ 2160 01cc 0820A0E3 		mov	r2, #8
+ 2161 01d0 0430A0E3 		mov	r3, #4
+ 2162 01d4 FEFFFFEB 		bl	RGB2GrayMatrix
+  39:../main.c     ****     Gray2BinaryMatrix(imagenGris,imagenBinaria,127,N,M);
+ 2163              		.loc 1 39 0
+ 2164 01d8 0430A0E3 		mov	r3, #4
+ 2165 01dc 00308DE5 		str	r3, [sp, #0]
+ 2166 01e0 4C009FE5 		ldr	r0, .L7+4
+ 2167 01e4 4C109FE5 		ldr	r1, .L7+8
+ 2168 01e8 7F20A0E3 		mov	r2, #127
+ 2169 01ec 0830A0E3 		mov	r3, #8
+ 2170 01f0 FEFFFFEB 		bl	Gray2BinaryMatrix
+  40:../main.c     ****     contarUnos(imagenBinaria,unosPorFila,N,M);
+ 2171              		.loc 1 40 0
+ 2172 01f4 3C009FE5 		ldr	r0, .L7+8
+ 2173 01f8 3C109FE5 		ldr	r1, .L7+12
+ 2174 01fc 0820A0E3 		mov	r2, #8
+ 2175 0200 0430A0E3 		mov	r3, #4
+ 2176 0204 FEFFFFEB 		bl	contarUnos
+  41:../main.c     ****     Binary2BordeMatrix(imagenBinaria, imagenBorde, N, M);
+ 2177              		.loc 1 41 0
+ 2178 0208 28009FE5 		ldr	r0, .L7+8
+ 2179 020c 2C109FE5 		ldr	r1, .L7+16
+ 2180 0210 0820A0E3 		mov	r2, #8
+ 2181 0214 0430A0E3 		mov	r3, #4
+ 2182 0218 FEFFFFEB 		bl	Binary2BordeMatrix
+  42:../main.c     ****     return 0;
+ 2183              		.loc 1 42 0
+ 2184 021c 0030A0E3 		mov	r3, #0
+  43:../main.c     **** }
+ 2185              		.loc 1 43 0
+ 2186 0220 0300A0E1 		mov	r0, r3
+ 2187 0224 0CD04BE2 		sub	sp, fp, #12
+ 2188 0228 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2189 022c 1EFF2FE1 		bx	lr
+ 2190              	.L8:
+ 2191              		.align	2
+ 2192              	.L7:
+ 2193 0230 00000000 		.word	imagenRGB
+ 2194 0234 00000000 		.word	imagenGris
+ 2195 0238 00000000 		.word	imagenBinaria
+ 2196 023c 00000000 		.word	unosPorFila
+ 2197 0240 00000000 		.word	imagenBorde
+ 2198              		.cfi_endproc
+ 2199              	.LFE1:
+ 2201              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+                            *COM*:00000060 imagenRGB
+                            *COM*:00000020 imagenGris
+                            *COM*:00000020 imagenBinaria
+                            *COM*:00000020 imagenBorde
+                            *COM*:00000010 unosPorFila
+C:\Users\JAVIER\AppData\Local\Temp\ccdYay5r.s:1992   .text:00000000 $a
+C:\Users\JAVIER\AppData\Local\Temp\ccdYay5r.s:1995   .text:00000000 initRGB
+C:\Users\JAVIER\AppData\Local\Temp\ccdYay5r.s:2134   .text:000001a4 main
+C:\Users\JAVIER\AppData\Local\Temp\ccdYay5r.s:2193   .text:00000230 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+RGB2GrayMatrix
+Gray2BinaryMatrix
+contarUnos
+Binary2BordeMatrix

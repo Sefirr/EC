@@ -1,0 +1,14 @@
+Tareas a realizar:
+1.- Completar el codigo de InitStacks y InitISR en el archivo init.asm
+2.- Escribir la rutina ISR_IRQ en el archivo init.asm
+3.- Completar la funcion DoDetecta para que identifique el boton pulsado en el archivo boton.c
+4.- Implementar las funciones SwitchLed1 y SwitchLed2, (en el archivo led.c) 
+que deben cambiar el estado de los leds 1 y 2 respectivamente
+
+
+
+
+
+
+
+

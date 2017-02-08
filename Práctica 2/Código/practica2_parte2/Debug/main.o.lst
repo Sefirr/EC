@@ -1,0 +1,115 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"main.c"
+  21              	.Ltext0:
+  22              		.file 1 "../main.c"
+ 1875              		.align	2
+ 1878              	symbol:
+ 1879 0000 00000000 		.space	4
+ 1880              		.text
+ 1881              		.align	2
+ 1882              		.global	main
+ 1884              	main:
+ 1885              	.LFB0:
+   1:../main.c     ****     /*********************************************************************************************
+   2:../main.c     **** * Fichero:	main.c
+   3:../main.c     **** * Autor:	
+   4:../main.c     **** * Descrip:	punto de entrada de C
+   5:../main.c     **** * Version:	<P4-ARM.8seg-button>
+   6:../main.c     **** *********************************************************************************************/
+   7:../main.c     **** 
+   8:../main.c     **** /*--- ficheros de cabecera ---*/
+   9:../main.c     **** #include "44blib.h"
+  10:../main.c     **** #include "44b.h"
+  11:../main.c     **** 
+  12:../main.c     **** /*--- variables globales ---*/
+  13:../main.c     **** int symbol = 0;
+  14:../main.c     **** 
+  15:../main.c     **** 
+  16:../main.c     **** /*--- funciones externas ---*/
+  17:../main.c     **** extern void Eint4567_init(void);
+  18:../main.c     **** extern void D8Led_symbol(int value);
+  19:../main.c     **** extern void timer_init();
+  20:../main.c     **** extern void leds_off();
+  21:../main.c     **** extern void led1_on();
+  22:../main.c     **** 
+  23:../main.c     **** /*--- codigo de las funciones ---*/
+  24:../main.c     **** int main(void)
+  25:../main.c     **** {	
+ 1886              		.loc 1 25 0
+ 1887              		.cfi_startproc
+ 1888              		@ Function supports interworking.
+ 1889              		@ args = 0, pretend = 0, frame = 0
+ 1890              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1891 0000 0DC0A0E1 		mov	ip, sp
+ 1892              	.LCFI0:
+ 1893              		.cfi_def_cfa_register 12
+ 1894 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1895 0008 04B04CE2 		sub	fp, ip, #4
+ 1896              		.cfi_offset 14, -8
+ 1897              		.cfi_offset 13, -12
+ 1898              		.cfi_offset 11, -16
+ 1899              	.LCFI1:
+ 1900              		.cfi_def_cfa 11, 4
+  26:../main.c     ****     sys_init();     		/* Inicializacion de la placa, interrupciones, puertos y UART */
+ 1901              		.loc 1 26 0
+ 1902 000c FEFFFFEB 		bl	sys_init
+  27:../main.c     **** 	Eint4567_init(); 	    /* Inicializacion de EINT6/7 y del puerto G */
+ 1903              		.loc 1 27 0
+ 1904 0010 FEFFFFEB 		bl	Eint4567_init
+  28:../main.c     **** 	timer_init();	   // Inicializacion del temporizador
+ 1905              		.loc 1 28 0
+ 1906 0014 FEFFFFEB 		bl	timer_init
+  29:../main.c     **** 
+  30:../main.c     **** 	leds_off();
+ 1907              		.loc 1 30 0
+ 1908 0018 FEFFFFEB 		bl	leds_off
+  31:../main.c     **** 	led1_on();
+ 1909              		.loc 1 31 0
+ 1910 001c FEFFFFEB 		bl	led1_on
+  32:../main.c     **** 
+  33:../main.c     **** 	D8Led_symbol(symbol);  	/* muestra el simbolo inicial en el display */
+ 1911              		.loc 1 33 0
+ 1912 0020 0C309FE5 		ldr	r3, .L3
+ 1913 0024 003093E5 		ldr	r3, [r3, #0]
+ 1914 0028 0300A0E1 		mov	r0, r3
+ 1915 002c FEFFFFEB 		bl	D8Led_symbol
+ 1916              	.L2:
+  34:../main.c     **** 		
+  35:../main.c     ****     while(1) {
+  36:../main.c     **** 
+  37:../main.c     **** 
+  38:../main.c     **** 	}
+ 1917              		.loc 1 38 0 discriminator 1
+ 1918 0030 FEFFFFEA 		b	.L2
+ 1919              	.L4:
+ 1920              		.align	2
+ 1921              	.L3:
+ 1922 0034 00000000 		.word	symbol
+ 1923              		.cfi_endproc
+ 1924              	.LFE0:
+ 1926              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+C:\Users\JAVIER\AppData\Local\Temp\ccWGQzYb.s:1878   .bss:00000000 symbol
+C:\Users\JAVIER\AppData\Local\Temp\ccWGQzYb.s:1875   .bss:00000000 $d
+C:\Users\JAVIER\AppData\Local\Temp\ccWGQzYb.s:1881   .text:00000000 $a
+C:\Users\JAVIER\AppData\Local\Temp\ccWGQzYb.s:1884   .text:00000000 main
+C:\Users\JAVIER\AppData\Local\Temp\ccWGQzYb.s:1922   .text:00000034 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+sys_init
+Eint4567_init
+timer_init
+leds_off
+led1_on
+D8Led_symbol

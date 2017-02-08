@@ -1,0 +1,488 @@
+   1              		.cpu arm7tdmi
+   2              		.fpu softvfp
+   3              		.eabi_attribute 20, 1
+   4              		.eabi_attribute 21, 1
+   5              		.eabi_attribute 23, 3
+   6              		.eabi_attribute 24, 1
+   7              		.eabi_attribute 25, 1
+   8              		.eabi_attribute 26, 1
+   9              		.eabi_attribute 30, 6
+  10              		.eabi_attribute 18, 4
+  11              		.file	"8seg.c"
+  21              	.Ltext0:
+  22              		.file 1 "../8seg.c"
+ 1935              		.align	2
+ 1938              	Symbol:
+ 1939 0000 7FFFFFFF 		.word	-129
+ 1940 0004 BFFFFFFF 		.word	-65
+ 1941 0008 DFFFFFFF 		.word	-33
+ 1942 000c F7FFFFFF 		.word	-9
+ 1943 0010 FBFFFFFF 		.word	-5
+ 1944 0014 FEFFFFFF 		.word	-2
+ 1945 0018 FDFFFFFF 		.word	-3
+ 1946 001c EFFFFFFF 		.word	-17
+ 1947              		.text
+ 1948              		.align	2
+ 1949              		.global	D8Led_init
+ 1951              	D8Led_init:
+ 1952              	.LFB0:
+   1:../8seg.c     **** /*********************************************************************************************
+   2:../8seg.c     **** * Fichero:	8led.c
+   3:../8seg.c     **** * Autor:		
+   4:../8seg.c     **** * Descrip:	Funciones de control del display 8-segmentos
+   5:../8seg.c     **** * Version:	
+   6:../8seg.c     **** *********************************************************************************************/
+   7:../8seg.c     **** 
+   8:../8seg.c     **** /*--- ficheros de cabecera ---*/
+   9:../8seg.c     **** #include "44b.h"
+  10:../8seg.c     **** #include "def.h"
+  11:../8seg.c     **** 
+  12:../8seg.c     **** /*--- definicion de macros ---*/
+  13:../8seg.c     **** #define	LED8ADDR	(*(volatile unsigned char *)(0x2140000))
+  14:../8seg.c     **** 
+  15:../8seg.c     **** /* Mapa de bits de cada segmento 
+  16:../8seg.c     ****   (valor que se debe escribir en el display para que se ilumine el segmento) */
+  17:../8seg.c     **** #define SEGMENT_A		~0x80		
+  18:../8seg.c     **** #define SEGMENT_B		~0x40
+  19:../8seg.c     **** #define SEGMENT_C		~0x20
+  20:../8seg.c     **** #define SEGMENT_D		~0x08
+  21:../8seg.c     **** #define SEGMENT_E		~0x04
+  22:../8seg.c     **** #define SEGMENT_F		~0x02
+  23:../8seg.c     **** #define SEGMENT_G		~0x01
+  24:../8seg.c     **** #define SEGMENT_P		~0x10
+  25:../8seg.c     **** 
+  26:../8seg.c     **** /*--- variables globales ---*/
+  27:../8seg.c     **** /* tabla de segmentos */
+  28:../8seg.c     **** int Symbol[] = { SEGMENT_A, SEGMENT_B, SEGMENT_C, SEGMENT_D, SEGMENT_E, SEGMENT_G,SEGMENT_F, SEGMEN
+  29:../8seg.c     **** 			  					  
+  30:../8seg.c     **** /*--- declaración de funciones ---*/
+  31:../8seg.c     **** void D8Led_init(void);
+  32:../8seg.c     **** void D8Led_symbol(int value); 
+  33:../8seg.c     **** 
+  34:../8seg.c     **** /*--- código de las funciones ---*/
+  35:../8seg.c     **** void D8Led_init(void)
+  36:../8seg.c     **** {
+ 1953              		.loc 1 36 0
+ 1954              		.cfi_startproc
+ 1955              		@ Function supports interworking.
+ 1956              		@ args = 0, pretend = 0, frame = 0
+ 1957              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1958 0000 0DC0A0E1 		mov	ip, sp
+ 1959              	.LCFI0:
+ 1960              		.cfi_def_cfa_register 12
+ 1961 0004 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1962 0008 04B04CE2 		sub	fp, ip, #4
+ 1963              		.cfi_offset 14, -8
+ 1964              		.cfi_offset 13, -12
+ 1965              		.cfi_offset 11, -16
+ 1966              	.LCFI1:
+ 1967              		.cfi_def_cfa 11, 4
+  37:../8seg.c     ****     /* Estado inicial del display con todos los segmentos iluminados 
+  38:../8seg.c     ****        (buscar en los ficheros de cabera la direccion implicada) */
+  39:../8seg.c     ****     LED8ADDR = 0 ;
+ 1968              		.loc 1 39 0
+ 1969 000c 8537A0E3 		mov	r3, #34865152
+ 1970 0010 0020A0E3 		mov	r2, #0
+ 1971 0014 0020C3E5 		strb	r2, [r3, #0]
+  40:../8seg.c     **** }
+ 1972              		.loc 1 40 0
+ 1973 0018 0CD04BE2 		sub	sp, fp, #12
+ 1974 001c 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 1975 0020 1EFF2FE1 		bx	lr
+ 1976              		.cfi_endproc
+ 1977              	.LFE0:
+ 1979              		.align	2
+ 1980              		.global	D8Led_symbol
+ 1982              	D8Led_symbol:
+ 1983              	.LFB1:
+  41:../8seg.c     **** 
+  42:../8seg.c     **** void D8Led_symbol(int value)
+  43:../8seg.c     **** {
+ 1984              		.loc 1 43 0
+ 1985              		.cfi_startproc
+ 1986              		@ Function supports interworking.
+ 1987              		@ args = 0, pretend = 0, frame = 8
+ 1988              		@ frame_needed = 1, uses_anonymous_args = 0
+ 1989 0024 0DC0A0E1 		mov	ip, sp
+ 1990              	.LCFI2:
+ 1991              		.cfi_def_cfa_register 12
+ 1992 0028 00D82DE9 		stmfd	sp!, {fp, ip, lr, pc}
+ 1993 002c 04B04CE2 		sub	fp, ip, #4
+ 1994              		.cfi_offset 14, -8
+ 1995              		.cfi_offset 13, -12
+ 1996              		.cfi_offset 11, -16
+ 1997              	.LCFI3:
+ 1998              		.cfi_def_cfa 11, 4
+ 1999 0030 08D04DE2 		sub	sp, sp, #8
+ 2000 0034 10000BE5 		str	r0, [fp, #-16]
+  44:../8seg.c     **** /*Tarea 3*/
+  45:../8seg.c     **** 	/* muestra el Symbol[value] en el display   */
+  46:../8seg.c     **** 	if(value == 0x9)
+ 2001              		.loc 1 46 0
+ 2002 0038 10301BE5 		ldr	r3, [fp, #-16]
+ 2003 003c 090053E3 		cmp	r3, #9
+ 2004 0040 1F00001A 		bne	.L3
+  47:../8seg.c     **** 		LED8ADDR = Symbol[0] & Symbol[1] & Symbol[2] & Symbol[3] & Symbol[5] & Symbol[6];
+ 2005              		.loc 1 47 0
+ 2006 0044 8537A0E3 		mov	r3, #34865152
+ 2007 0048 8C249FE5 		ldr	r2, .L13
+ 2008 004c 002092E5 		ldr	r2, [r2, #0]
+ 2009 0050 FF1002E2 		and	r1, r2, #255
+ 2010 0054 80249FE5 		ldr	r2, .L13
+ 2011 0058 042092E5 		ldr	r2, [r2, #4]
+ 2012 005c FF2002E2 		and	r2, r2, #255
+ 2013 0060 022001E0 		and	r2, r1, r2
+ 2014 0064 FF1002E2 		and	r1, r2, #255
+ 2015 0068 6C249FE5 		ldr	r2, .L13
+ 2016 006c 082092E5 		ldr	r2, [r2, #8]
+ 2017 0070 FF2002E2 		and	r2, r2, #255
+ 2018 0074 022001E0 		and	r2, r1, r2
+ 2019 0078 FF1002E2 		and	r1, r2, #255
+ 2020 007c 58249FE5 		ldr	r2, .L13
+ 2021 0080 0C2092E5 		ldr	r2, [r2, #12]
+ 2022 0084 FF2002E2 		and	r2, r2, #255
+ 2023 0088 022001E0 		and	r2, r1, r2
+ 2024 008c FF1002E2 		and	r1, r2, #255
+ 2025 0090 44249FE5 		ldr	r2, .L13
+ 2026 0094 142092E5 		ldr	r2, [r2, #20]
+ 2027 0098 FF2002E2 		and	r2, r2, #255
+ 2028 009c 022001E0 		and	r2, r1, r2
+ 2029 00a0 FF1002E2 		and	r1, r2, #255
+ 2030 00a4 30249FE5 		ldr	r2, .L13
+ 2031 00a8 182092E5 		ldr	r2, [r2, #24]
+ 2032 00ac FF2002E2 		and	r2, r2, #255
+ 2033 00b0 022001E0 		and	r2, r1, r2
+ 2034 00b4 FF2002E2 		and	r2, r2, #255
+ 2035 00b8 FF2002E2 		and	r2, r2, #255
+ 2036 00bc 0020C3E5 		strb	r2, [r3, #0]
+ 2037 00c0 020100EA 		b	.L2
+ 2038              	.L3:
+  48:../8seg.c     **** 	else if(value == 0x8)
+ 2039              		.loc 1 48 0
+ 2040 00c4 10301BE5 		ldr	r3, [fp, #-16]
+ 2041 00c8 080053E3 		cmp	r3, #8
+ 2042 00cc 2400001A 		bne	.L5
+  49:../8seg.c     **** 		LED8ADDR = Symbol[0] & Symbol[1] & Symbol[2] & Symbol[3] & Symbol[4] & Symbol[5] & Symbol[6];
+ 2043              		.loc 1 49 0
+ 2044 00d0 8537A0E3 		mov	r3, #34865152
+ 2045 00d4 00249FE5 		ldr	r2, .L13
+ 2046 00d8 002092E5 		ldr	r2, [r2, #0]
+ 2047 00dc FF1002E2 		and	r1, r2, #255
+ 2048 00e0 F4239FE5 		ldr	r2, .L13
+ 2049 00e4 042092E5 		ldr	r2, [r2, #4]
+ 2050 00e8 FF2002E2 		and	r2, r2, #255
+ 2051 00ec 022001E0 		and	r2, r1, r2
+ 2052 00f0 FF1002E2 		and	r1, r2, #255
+ 2053 00f4 E0239FE5 		ldr	r2, .L13
+ 2054 00f8 082092E5 		ldr	r2, [r2, #8]
+ 2055 00fc FF2002E2 		and	r2, r2, #255
+ 2056 0100 022001E0 		and	r2, r1, r2
+ 2057 0104 FF1002E2 		and	r1, r2, #255
+ 2058 0108 CC239FE5 		ldr	r2, .L13
+ 2059 010c 0C2092E5 		ldr	r2, [r2, #12]
+ 2060 0110 FF2002E2 		and	r2, r2, #255
+ 2061 0114 022001E0 		and	r2, r1, r2
+ 2062 0118 FF1002E2 		and	r1, r2, #255
+ 2063 011c B8239FE5 		ldr	r2, .L13
+ 2064 0120 102092E5 		ldr	r2, [r2, #16]
+ 2065 0124 FF2002E2 		and	r2, r2, #255
+ 2066 0128 022001E0 		and	r2, r1, r2
+ 2067 012c FF1002E2 		and	r1, r2, #255
+ 2068 0130 A4239FE5 		ldr	r2, .L13
+ 2069 0134 142092E5 		ldr	r2, [r2, #20]
+ 2070 0138 FF2002E2 		and	r2, r2, #255
+ 2071 013c 022001E0 		and	r2, r1, r2
+ 2072 0140 FF1002E2 		and	r1, r2, #255
+ 2073 0144 90239FE5 		ldr	r2, .L13
+ 2074 0148 182092E5 		ldr	r2, [r2, #24]
+ 2075 014c FF2002E2 		and	r2, r2, #255
+ 2076 0150 022001E0 		and	r2, r1, r2
+ 2077 0154 FF2002E2 		and	r2, r2, #255
+ 2078 0158 FF2002E2 		and	r2, r2, #255
+ 2079 015c 0020C3E5 		strb	r2, [r3, #0]
+ 2080 0160 DA0000EA 		b	.L2
+ 2081              	.L5:
+  50:../8seg.c     **** 	else if(value == 0x7)
+ 2082              		.loc 1 50 0
+ 2083 0164 10301BE5 		ldr	r3, [fp, #-16]
+ 2084 0168 070053E3 		cmp	r3, #7
+ 2085 016c 1000001A 		bne	.L6
+  51:../8seg.c     **** 			LED8ADDR = Symbol[0] & Symbol[1] & Symbol[2];
+ 2086              		.loc 1 51 0
+ 2087 0170 8537A0E3 		mov	r3, #34865152
+ 2088 0174 60239FE5 		ldr	r2, .L13
+ 2089 0178 002092E5 		ldr	r2, [r2, #0]
+ 2090 017c FF1002E2 		and	r1, r2, #255
+ 2091 0180 54239FE5 		ldr	r2, .L13
+ 2092 0184 042092E5 		ldr	r2, [r2, #4]
+ 2093 0188 FF2002E2 		and	r2, r2, #255
+ 2094 018c 022001E0 		and	r2, r1, r2
+ 2095 0190 FF1002E2 		and	r1, r2, #255
+ 2096 0194 40239FE5 		ldr	r2, .L13
+ 2097 0198 082092E5 		ldr	r2, [r2, #8]
+ 2098 019c FF2002E2 		and	r2, r2, #255
+ 2099 01a0 022001E0 		and	r2, r1, r2
+ 2100 01a4 FF2002E2 		and	r2, r2, #255
+ 2101 01a8 FF2002E2 		and	r2, r2, #255
+ 2102 01ac 0020C3E5 		strb	r2, [r3, #0]
+ 2103 01b0 C60000EA 		b	.L2
+ 2104              	.L6:
+  52:../8seg.c     **** 	else if(value == 0x6)
+ 2105              		.loc 1 52 0
+ 2106 01b4 10301BE5 		ldr	r3, [fp, #-16]
+ 2107 01b8 060053E3 		cmp	r3, #6
+ 2108 01bc 1F00001A 		bne	.L7
+  53:../8seg.c     **** 			LED8ADDR = Symbol[0] &  Symbol[2] & Symbol[3] &  Symbol[4] & Symbol[5] &  Symbol[6];
+ 2109              		.loc 1 53 0
+ 2110 01c0 8537A0E3 		mov	r3, #34865152
+ 2111 01c4 10239FE5 		ldr	r2, .L13
+ 2112 01c8 002092E5 		ldr	r2, [r2, #0]
+ 2113 01cc FF1002E2 		and	r1, r2, #255
+ 2114 01d0 04239FE5 		ldr	r2, .L13
+ 2115 01d4 082092E5 		ldr	r2, [r2, #8]
+ 2116 01d8 FF2002E2 		and	r2, r2, #255
+ 2117 01dc 022001E0 		and	r2, r1, r2
+ 2118 01e0 FF1002E2 		and	r1, r2, #255
+ 2119 01e4 F0229FE5 		ldr	r2, .L13
+ 2120 01e8 0C2092E5 		ldr	r2, [r2, #12]
+ 2121 01ec FF2002E2 		and	r2, r2, #255
+ 2122 01f0 022001E0 		and	r2, r1, r2
+ 2123 01f4 FF1002E2 		and	r1, r2, #255
+ 2124 01f8 DC229FE5 		ldr	r2, .L13
+ 2125 01fc 102092E5 		ldr	r2, [r2, #16]
+ 2126 0200 FF2002E2 		and	r2, r2, #255
+ 2127 0204 022001E0 		and	r2, r1, r2
+ 2128 0208 FF1002E2 		and	r1, r2, #255
+ 2129 020c C8229FE5 		ldr	r2, .L13
+ 2130 0210 142092E5 		ldr	r2, [r2, #20]
+ 2131 0214 FF2002E2 		and	r2, r2, #255
+ 2132 0218 022001E0 		and	r2, r1, r2
+ 2133 021c FF1002E2 		and	r1, r2, #255
+ 2134 0220 B4229FE5 		ldr	r2, .L13
+ 2135 0224 182092E5 		ldr	r2, [r2, #24]
+ 2136 0228 FF2002E2 		and	r2, r2, #255
+ 2137 022c 022001E0 		and	r2, r1, r2
+ 2138 0230 FF2002E2 		and	r2, r2, #255
+ 2139 0234 FF2002E2 		and	r2, r2, #255
+ 2140 0238 0020C3E5 		strb	r2, [r3, #0]
+ 2141 023c A30000EA 		b	.L2
+ 2142              	.L7:
+  54:../8seg.c     **** 	else if(value == 0x5)
+ 2143              		.loc 1 54 0
+ 2144 0240 10301BE5 		ldr	r3, [fp, #-16]
+ 2145 0244 050053E3 		cmp	r3, #5
+ 2146 0248 1A00001A 		bne	.L8
+  55:../8seg.c     **** 			LED8ADDR = Symbol[0] & Symbol[2] & Symbol[3] & Symbol[5] & Symbol[6];
+ 2147              		.loc 1 55 0
+ 2148 024c 8537A0E3 		mov	r3, #34865152
+ 2149 0250 84229FE5 		ldr	r2, .L13
+ 2150 0254 002092E5 		ldr	r2, [r2, #0]
+ 2151 0258 FF1002E2 		and	r1, r2, #255
+ 2152 025c 78229FE5 		ldr	r2, .L13
+ 2153 0260 082092E5 		ldr	r2, [r2, #8]
+ 2154 0264 FF2002E2 		and	r2, r2, #255
+ 2155 0268 022001E0 		and	r2, r1, r2
+ 2156 026c FF1002E2 		and	r1, r2, #255
+ 2157 0270 64229FE5 		ldr	r2, .L13
+ 2158 0274 0C2092E5 		ldr	r2, [r2, #12]
+ 2159 0278 FF2002E2 		and	r2, r2, #255
+ 2160 027c 022001E0 		and	r2, r1, r2
+ 2161 0280 FF1002E2 		and	r1, r2, #255
+ 2162 0284 50229FE5 		ldr	r2, .L13
+ 2163 0288 142092E5 		ldr	r2, [r2, #20]
+ 2164 028c FF2002E2 		and	r2, r2, #255
+ 2165 0290 022001E0 		and	r2, r1, r2
+ 2166 0294 FF1002E2 		and	r1, r2, #255
+ 2167 0298 3C229FE5 		ldr	r2, .L13
+ 2168 029c 182092E5 		ldr	r2, [r2, #24]
+ 2169 02a0 FF2002E2 		and	r2, r2, #255
+ 2170 02a4 022001E0 		and	r2, r1, r2
+ 2171 02a8 FF2002E2 		and	r2, r2, #255
+ 2172 02ac FF2002E2 		and	r2, r2, #255
+ 2173 02b0 0020C3E5 		strb	r2, [r3, #0]
+ 2174 02b4 850000EA 		b	.L2
+ 2175              	.L8:
+  56:../8seg.c     **** 	else if(value == 0x4)
+ 2176              		.loc 1 56 0
+ 2177 02b8 10301BE5 		ldr	r3, [fp, #-16]
+ 2178 02bc 040053E3 		cmp	r3, #4
+ 2179 02c0 1500001A 		bne	.L9
+  57:../8seg.c     **** 			LED8ADDR = Symbol[1] & Symbol[2] & Symbol[5] & Symbol[6];
+ 2180              		.loc 1 57 0
+ 2181 02c4 8537A0E3 		mov	r3, #34865152
+ 2182 02c8 0C229FE5 		ldr	r2, .L13
+ 2183 02cc 042092E5 		ldr	r2, [r2, #4]
+ 2184 02d0 FF1002E2 		and	r1, r2, #255
+ 2185 02d4 00229FE5 		ldr	r2, .L13
+ 2186 02d8 082092E5 		ldr	r2, [r2, #8]
+ 2187 02dc FF2002E2 		and	r2, r2, #255
+ 2188 02e0 022001E0 		and	r2, r1, r2
+ 2189 02e4 FF1002E2 		and	r1, r2, #255
+ 2190 02e8 EC219FE5 		ldr	r2, .L13
+ 2191 02ec 142092E5 		ldr	r2, [r2, #20]
+ 2192 02f0 FF2002E2 		and	r2, r2, #255
+ 2193 02f4 022001E0 		and	r2, r1, r2
+ 2194 02f8 FF1002E2 		and	r1, r2, #255
+ 2195 02fc D8219FE5 		ldr	r2, .L13
+ 2196 0300 182092E5 		ldr	r2, [r2, #24]
+ 2197 0304 FF2002E2 		and	r2, r2, #255
+ 2198 0308 022001E0 		and	r2, r1, r2
+ 2199 030c FF2002E2 		and	r2, r2, #255
+ 2200 0310 FF2002E2 		and	r2, r2, #255
+ 2201 0314 0020C3E5 		strb	r2, [r3, #0]
+ 2202 0318 6C0000EA 		b	.L2
+ 2203              	.L9:
+  58:../8seg.c     **** 	else if(value == 0x3)
+ 2204              		.loc 1 58 0
+ 2205 031c 10301BE5 		ldr	r3, [fp, #-16]
+ 2206 0320 030053E3 		cmp	r3, #3
+ 2207 0324 1A00001A 		bne	.L10
+  59:../8seg.c     **** 			LED8ADDR = Symbol[0] & Symbol[1] & Symbol[2] & Symbol[3] & Symbol[6];
+ 2208              		.loc 1 59 0
+ 2209 0328 8537A0E3 		mov	r3, #34865152
+ 2210 032c A8219FE5 		ldr	r2, .L13
+ 2211 0330 002092E5 		ldr	r2, [r2, #0]
+ 2212 0334 FF1002E2 		and	r1, r2, #255
+ 2213 0338 9C219FE5 		ldr	r2, .L13
+ 2214 033c 042092E5 		ldr	r2, [r2, #4]
+ 2215 0340 FF2002E2 		and	r2, r2, #255
+ 2216 0344 022001E0 		and	r2, r1, r2
+ 2217 0348 FF1002E2 		and	r1, r2, #255
+ 2218 034c 88219FE5 		ldr	r2, .L13
+ 2219 0350 082092E5 		ldr	r2, [r2, #8]
+ 2220 0354 FF2002E2 		and	r2, r2, #255
+ 2221 0358 022001E0 		and	r2, r1, r2
+ 2222 035c FF1002E2 		and	r1, r2, #255
+ 2223 0360 74219FE5 		ldr	r2, .L13
+ 2224 0364 0C2092E5 		ldr	r2, [r2, #12]
+ 2225 0368 FF2002E2 		and	r2, r2, #255
+ 2226 036c 022001E0 		and	r2, r1, r2
+ 2227 0370 FF1002E2 		and	r1, r2, #255
+ 2228 0374 60219FE5 		ldr	r2, .L13
+ 2229 0378 182092E5 		ldr	r2, [r2, #24]
+ 2230 037c FF2002E2 		and	r2, r2, #255
+ 2231 0380 022001E0 		and	r2, r1, r2
+ 2232 0384 FF2002E2 		and	r2, r2, #255
+ 2233 0388 FF2002E2 		and	r2, r2, #255
+ 2234 038c 0020C3E5 		strb	r2, [r3, #0]
+ 2235 0390 4E0000EA 		b	.L2
+ 2236              	.L10:
+  60:../8seg.c     **** 	else if(value == 0x2)
+ 2237              		.loc 1 60 0
+ 2238 0394 10301BE5 		ldr	r3, [fp, #-16]
+ 2239 0398 020053E3 		cmp	r3, #2
+ 2240 039c 1A00001A 		bne	.L11
+  61:../8seg.c     **** 			LED8ADDR = Symbol[0] & Symbol[1] & Symbol[3] & Symbol[4] & Symbol[6];
+ 2241              		.loc 1 61 0
+ 2242 03a0 8537A0E3 		mov	r3, #34865152
+ 2243 03a4 30219FE5 		ldr	r2, .L13
+ 2244 03a8 002092E5 		ldr	r2, [r2, #0]
+ 2245 03ac FF1002E2 		and	r1, r2, #255
+ 2246 03b0 24219FE5 		ldr	r2, .L13
+ 2247 03b4 042092E5 		ldr	r2, [r2, #4]
+ 2248 03b8 FF2002E2 		and	r2, r2, #255
+ 2249 03bc 022001E0 		and	r2, r1, r2
+ 2250 03c0 FF1002E2 		and	r1, r2, #255
+ 2251 03c4 10219FE5 		ldr	r2, .L13
+ 2252 03c8 0C2092E5 		ldr	r2, [r2, #12]
+ 2253 03cc FF2002E2 		and	r2, r2, #255
+ 2254 03d0 022001E0 		and	r2, r1, r2
+ 2255 03d4 FF1002E2 		and	r1, r2, #255
+ 2256 03d8 FC209FE5 		ldr	r2, .L13
+ 2257 03dc 102092E5 		ldr	r2, [r2, #16]
+ 2258 03e0 FF2002E2 		and	r2, r2, #255
+ 2259 03e4 022001E0 		and	r2, r1, r2
+ 2260 03e8 FF1002E2 		and	r1, r2, #255
+ 2261 03ec E8209FE5 		ldr	r2, .L13
+ 2262 03f0 182092E5 		ldr	r2, [r2, #24]
+ 2263 03f4 FF2002E2 		and	r2, r2, #255
+ 2264 03f8 022001E0 		and	r2, r1, r2
+ 2265 03fc FF2002E2 		and	r2, r2, #255
+ 2266 0400 FF2002E2 		and	r2, r2, #255
+ 2267 0404 0020C3E5 		strb	r2, [r3, #0]
+ 2268 0408 300000EA 		b	.L2
+ 2269              	.L11:
+  62:../8seg.c     **** 	else if(value == 0x1)
+ 2270              		.loc 1 62 0
+ 2271 040c 10301BE5 		ldr	r3, [fp, #-16]
+ 2272 0410 010053E3 		cmp	r3, #1
+ 2273 0414 0B00001A 		bne	.L12
+  63:../8seg.c     **** 			LED8ADDR = Symbol[1] & Symbol[2];
+ 2274              		.loc 1 63 0
+ 2275 0418 8537A0E3 		mov	r3, #34865152
+ 2276 041c B8209FE5 		ldr	r2, .L13
+ 2277 0420 042092E5 		ldr	r2, [r2, #4]
+ 2278 0424 FF1002E2 		and	r1, r2, #255
+ 2279 0428 AC209FE5 		ldr	r2, .L13
+ 2280 042c 082092E5 		ldr	r2, [r2, #8]
+ 2281 0430 FF2002E2 		and	r2, r2, #255
+ 2282 0434 022001E0 		and	r2, r1, r2
+ 2283 0438 FF2002E2 		and	r2, r2, #255
+ 2284 043c FF2002E2 		and	r2, r2, #255
+ 2285 0440 0020C3E5 		strb	r2, [r3, #0]
+ 2286 0444 210000EA 		b	.L2
+ 2287              	.L12:
+  64:../8seg.c     **** 	else if(value == 0x0)
+ 2288              		.loc 1 64 0
+ 2289 0448 10301BE5 		ldr	r3, [fp, #-16]
+ 2290 044c 000053E3 		cmp	r3, #0
+ 2291 0450 1E00001A 		bne	.L2
+  65:../8seg.c     **** 			LED8ADDR = Symbol[0] & Symbol[1] & Symbol[2] & Symbol[3] & Symbol[4] & Symbol[5];
+ 2292              		.loc 1 65 0
+ 2293 0454 8537A0E3 		mov	r3, #34865152
+ 2294 0458 7C209FE5 		ldr	r2, .L13
+ 2295 045c 002092E5 		ldr	r2, [r2, #0]
+ 2296 0460 FF1002E2 		and	r1, r2, #255
+ 2297 0464 70209FE5 		ldr	r2, .L13
+ 2298 0468 042092E5 		ldr	r2, [r2, #4]
+ 2299 046c FF2002E2 		and	r2, r2, #255
+ 2300 0470 022001E0 		and	r2, r1, r2
+ 2301 0474 FF1002E2 		and	r1, r2, #255
+ 2302 0478 5C209FE5 		ldr	r2, .L13
+ 2303 047c 082092E5 		ldr	r2, [r2, #8]
+ 2304 0480 FF2002E2 		and	r2, r2, #255
+ 2305 0484 022001E0 		and	r2, r1, r2
+ 2306 0488 FF1002E2 		and	r1, r2, #255
+ 2307 048c 48209FE5 		ldr	r2, .L13
+ 2308 0490 0C2092E5 		ldr	r2, [r2, #12]
+ 2309 0494 FF2002E2 		and	r2, r2, #255
+ 2310 0498 022001E0 		and	r2, r1, r2
+ 2311 049c FF1002E2 		and	r1, r2, #255
+ 2312 04a0 34209FE5 		ldr	r2, .L13
+ 2313 04a4 102092E5 		ldr	r2, [r2, #16]
+ 2314 04a8 FF2002E2 		and	r2, r2, #255
+ 2315 04ac 022001E0 		and	r2, r1, r2
+ 2316 04b0 FF1002E2 		and	r1, r2, #255
+ 2317 04b4 20209FE5 		ldr	r2, .L13
+ 2318 04b8 142092E5 		ldr	r2, [r2, #20]
+ 2319 04bc FF2002E2 		and	r2, r2, #255
+ 2320 04c0 022001E0 		and	r2, r1, r2
+ 2321 04c4 FF2002E2 		and	r2, r2, #255
+ 2322 04c8 FF2002E2 		and	r2, r2, #255
+ 2323 04cc 0020C3E5 		strb	r2, [r3, #0]
+ 2324              	.L2:
+  66:../8seg.c     **** 		
+  67:../8seg.c     **** /*fin Tarea 3*/		
+  68:../8seg.c     **** }
+ 2325              		.loc 1 68 0
+ 2326 04d0 0CD04BE2 		sub	sp, fp, #12
+ 2327 04d4 00689DE8 		ldmfd	sp, {fp, sp, lr}
+ 2328 04d8 1EFF2FE1 		bx	lr
+ 2329              	.L14:
+ 2330              		.align	2
+ 2331              	.L13:
+ 2332 04dc 00000000 		.word	Symbol
+ 2333              		.cfi_endproc
+ 2334              	.LFE1:
+ 2336              	.Letext0:
+DEFINED SYMBOLS
+                            *ABS*:00000000 8seg.c
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:1938   .data:00000000 Symbol
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:1935   .data:00000000 $d
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:1948   .text:00000000 $a
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:1951   .text:00000000 D8Led_init
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:1982   .text:00000024 D8Led_symbol
+C:\Users\JAVIER\AppData\Local\Temp\cc8iDZ6H.s:2332   .text:000004dc $d
+                     .debug_frame:00000010 $d
+
+NO UNDEFINED SYMBOLS
